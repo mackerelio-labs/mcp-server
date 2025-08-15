@@ -17,7 +17,8 @@ npm run dev
 
 # OR
 
-npm run build && node ./build/index.js
+docker build . -t mackerel-mcp
+docker run --rm -i mackerel-mcp
 ```
 
 ### Input Examples
