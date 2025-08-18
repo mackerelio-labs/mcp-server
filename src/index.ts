@@ -1,23 +1,21 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { listAlertsTool, ListAlertInput } from "./tools/alert.js";
 
 // Create an MCP server
 const server = new McpServer({
   name: "mackerel-mcp",
-  version: "0.0.1"
+  version: "0.0.1",
 });
 
-// TODO: delete
-server.registerTool("tmp",
+server.registerTool(
+  "list_alerts",
   {
-    title: "Tmp Tool",
-    description: "Add two numbers",
-    inputSchema: { a: z.number(), b: z.number() }
+    title: "List Alerts",
+    description: "Retrieve alerts from Mackerel",
+    inputSchema: ListAlertInput,
   },
-  async ({ a, b }) => ({
-    content: [{ type: "text", text: String(a + b) }]
-  })
+  listAlertsTool,
 );
 
 async function main() {
