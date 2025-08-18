@@ -3,7 +3,7 @@ import { z } from "zod";
 import { mackerelClient } from "../client.js";
 import { buildToolResponse } from "./util.js";
 
-export const ListAlertInput = {
+export const ListAlertsToolInput = {
   withClosed: z
     .boolean()
     .optional()
@@ -26,7 +26,7 @@ export const ListAlertInput = {
     ),
 };
 
-export const listAlertsTool: ToolCallback<typeof ListAlertInput> = async ({
+export const listAlertsTool: ToolCallback<typeof ListAlertsToolInput> = async ({
   withClosed,
   nextId,
   limit,
