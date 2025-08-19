@@ -1,12 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { setupClient } from "../__tests__/setupClient.js";
 import { setupServer } from "../__tests__/setupServer.js";
-import { listAlertsTool, getAlertTool, GetAlertToolInput } from "./alert.js";
+import { AlertTool } from "./alertTool.js";
 import { mswServer } from "../mocks/server.js";
 import { HttpResponse, http } from "msw";
-import { BASE_URL } from "../client.js";
+import { MackerelClient } from "../client.js";
+import { MACKEREL_BASE_URL } from "../__tests__/mackerelClient.js";
 
 describe("Alert Tool", () => {
+  const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
+  const alertTool = new AlertTool(mackerelClient);
+
   it("listAlertsTool", async () => {
     const alerts = [
       {
@@ -25,14 +29,14 @@ describe("Alert Tool", () => {
       },
     ];
     mswServer.use(
-      http.get(BASE_URL + "/api/v0/alerts", () => {
+      http.get(MACKEREL_BASE_URL + "/api/v0/alerts", () => {
         return HttpResponse.json({
           alerts,
         });
       }),
     );
 
-    const server = setupServer("list_alerts", {}, listAlertsTool);
+    const server = setupServer("list_alerts", {}, alertTool.listAlerts);
     const { client } = await setupClient(server);
 
     const result = await client.callTool({
@@ -49,7 +53,10 @@ describe("Alert Tool", () => {
     });
   });
 
-  it("getAlertTool", async () => {
+  it("getAlert", async () => {
+    const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
+    const alertTool = new AlertTool(mackerelClient);
+
     const alert = {
       id: "alert1",
       status: "CRITICAL",
@@ -58,15 +65,15 @@ describe("Alert Tool", () => {
       openedAt: 1600000000,
     };
     mswServer.use(
-      http.get(BASE_URL + "/api/v0/alerts/alert1", () => {
+      http.get(MACKEREL_BASE_URL + "/api/v0/alerts/alert1", () => {
         return HttpResponse.json(alert);
       }),
     );
 
     const server = setupServer(
       "get_alert",
-      { inputSchema: GetAlertToolInput },
-      getAlertTool,
+      { inputSchema: AlertTool.GetAlertToolInput.shape },
+      alertTool.getAlert,
     );
     const { client } = await setupClient(server);
 
