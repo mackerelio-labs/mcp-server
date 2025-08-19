@@ -46,3 +46,15 @@ export const listAlertsTool: ToolCallback<typeof ListAlertsToolInput> = async ({
     async () => await mackerelClient.getAlerts(searchParams),
   );
 };
+
+export const GetAlertToolInput = {
+  alertId: z.string().describe("The ID of the alert to retrieve"),
+};
+
+export const getAlertTool: ToolCallback<typeof GetAlertToolInput> = async ({
+  alertId,
+}) => {
+  return await buildToolResponse(
+    async () => await mackerelClient.getAlert(alertId),
+  );
+};

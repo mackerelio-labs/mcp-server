@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { listAlertsTool, ListAlertsToolInput } from "./tools/alert.js";
+import { listAlertsTool, ListAlertsToolInput, getAlertTool, GetAlertToolInput } from "./tools/alert.js";
 
 // Create an MCP server
 const server = new McpServer({
@@ -16,6 +16,16 @@ server.registerTool(
     inputSchema: ListAlertsToolInput,
   },
   listAlertsTool,
+);
+
+server.registerTool(
+  "get_alert",
+  {
+    title: "Get Alert",
+    description: "Retrieve a specific alert by ID from Mackerel",
+    inputSchema: GetAlertToolInput,
+  },
+  getAlertTool,
 );
 
 async function main() {
