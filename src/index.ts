@@ -1,29 +1,43 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { AlertTool } from "./tools/alertTool.js";
+import { MackerelClient } from "./client.js";
 
-// Create an MCP server
-const server = new McpServer({
-  name: "mackerel-mcp",
-  version: "0.0.1"
-});
-
-// TODO: delete
-server.registerTool("tmp",
-  {
-    title: "Tmp Tool",
-    description: "Add two numbers",
-    inputSchema: { a: z.number(), b: z.number() }
-  },
-  async ({ a, b }) => ({
-    content: [{ type: "text", text: String(a + b) }]
-  })
-);
+const BASE_URL = "https://api.mackerelio.com";
 
 async function main() {
+  const mackerelClient = new MackerelClient(BASE_URL, getApiKey());
+  const alertTool = new AlertTool(mackerelClient);
+
+  // Create an MCP server
+  const server = new McpServer({
+    name: "mackerel-mcp",
+    version: "0.0.1",
+  });
+
+  server.registerTool(
+    "list_alerts",
+    {
+      title: "List Alerts",
+      // TODO: enhance description
+      description: "Retrieve alerts from Mackerel",
+      inputSchema: AlertTool.ListAlertsToolInput.shape,
+    },
+    alertTool.listAlerts,
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Mackerel MCP Server running on stdio");
+}
+
+function getApiKey(): string {
+  let apiKey = process.env.MACKEREL_API_KEY;
+  if (!apiKey) {
+    throw new Error("MACKEREL_API_KEY environment variable is not set.");
+  }
+
+  return apiKey;
 }
 
 main().catch((error) => {
