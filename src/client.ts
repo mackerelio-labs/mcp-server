@@ -1,6 +1,3 @@
-export const BASE_URL = "https://api.mackerelio.com";
-export const API_KEY = process.env.MACKEREL_API_KEY || "";
-
 export class MackerelClient {
   private readonly baseUrl: string;
   private readonly apiKey: string;
@@ -13,8 +10,13 @@ export class MackerelClient {
   private async request<T>(
     method: string,
     path: string,
-    searchParams?: URLSearchParams,
-    body?: any,
+    {
+      searchParams,
+      body,
+    }: {
+      searchParams?: URLSearchParams;
+      body?: any;
+    } = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${path}${searchParams ? "?" + searchParams.toString() : ""}`;
     const headers: HeadersInit = {
@@ -42,13 +44,26 @@ export class MackerelClient {
   }
 
   // GET /api/v0/alerts
-  async getAlerts(searchParams: URLSearchParams) {
+  async getAlerts(
+    withClosed: boolean | undefined,
+    nextId: string | undefined,
+    limit: number | undefined,
+  ): Promise<{ alerts: any[]; nextId?: string }> {
+    const searchParams = new URLSearchParams();
+    if (withClosed !== undefined) {
+      searchParams.append("withClosed", withClosed.toString());
+    }
+    if (nextId) {
+      searchParams.append("nextId", nextId);
+    }
+    if (limit !== undefined) {
+      searchParams.append("limit", limit.toString());
+    }
+
     return this.request<{ alerts: any[]; nextId?: string }>(
       "GET",
       "/api/v0/alerts",
-      searchParams,
+      { searchParams },
     );
   }
 }
-
-export const mackerelClient = new MackerelClient(BASE_URL, API_KEY);
