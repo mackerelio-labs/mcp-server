@@ -1,17 +1,17 @@
 import { describe, it, expect } from "vitest";
 import { setupClient } from "../__tests__/setupClient.js";
+import { setupServer } from "../__tests__/setupServer.js";
+import { AlertTool } from "./alertTool.js";
 import { mswServer } from "../mocks/server.js";
 import { HttpResponse, http } from "msw";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { MackerelClient } from "../client.js";
-import { AlertTool } from "./alertTool.js";
 import { MACKEREL_BASE_URL } from "../__tests__/mackerelClient.js";
 
 describe("Alert Tool", () => {
-  it("listAlertsTool", async () => {
-    const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
-    const alertTool = new AlertTool(mackerelClient);
+  const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
+  const alertTool = new AlertTool(mackerelClient);
 
+  it("listAlertsTool", async () => {
     const alerts = [
       {
         id: "alert1",
@@ -36,11 +36,7 @@ describe("Alert Tool", () => {
       }),
     );
 
-    const server = new McpServer({
-      name: "mackerel",
-      version: "0.0.1",
-    });
-    server.registerTool("list_alerts", {}, alertTool.listAlerts);
+    const server = setupServer("list_alerts", {}, alertTool.listAlerts);
     const { client } = await setupClient(server);
 
     const result = await client.callTool({
@@ -52,6 +48,47 @@ describe("Alert Tool", () => {
         {
           type: "text",
           text: JSON.stringify({ alerts }),
+        },
+      ],
+    });
+  });
+
+  it("getAlert", async () => {
+    const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
+    const alertTool = new AlertTool(mackerelClient);
+
+    const alert = {
+      id: "alert1",
+      status: "CRITICAL",
+      monitorId: "monitor1",
+      type: "host",
+      openedAt: 1600000000,
+    };
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/alerts/alert1", () => {
+        return HttpResponse.json(alert);
+      }),
+    );
+
+    const server = setupServer(
+      "get_alert",
+      { inputSchema: AlertTool.GetAlertToolInput.shape },
+      alertTool.getAlert,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_alert",
+      arguments: {
+        alertId: "alert1",
+      },
+    });
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(alert),
         },
       ],
     });

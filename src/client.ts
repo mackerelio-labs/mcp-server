@@ -66,4 +66,9 @@ export class MackerelClient {
       { searchParams },
     );
   }
+
+  // GET /api/v0/alerts/{alertId}
+  async getAlert(alertId: string) {
+    return this.request<{ alert: any }>("GET", `/api/v0/alerts/${alertId}`);
+  }
 }

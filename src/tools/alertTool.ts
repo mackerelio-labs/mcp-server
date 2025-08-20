@@ -38,4 +38,16 @@ export class AlertTool {
         await this.mackerelClient.getAlerts(withClosed, nextId, limit),
     );
   };
+
+  static GetAlertToolInput = z.object({
+    alertId: z.string().describe("The ID of the alert to retrieve"),
+  });
+
+  getAlert = async ({
+    alertId,
+  }: z.infer<typeof AlertTool.GetAlertToolInput>) => {
+    return await buildToolResponse(
+      async () => await this.mackerelClient.getAlert(alertId),
+    );
+  };
 }
