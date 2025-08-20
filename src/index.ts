@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { AlertTool } from "./tools/alertTool.js";
+import { DashboardTool } from "./tools/dashboardTool.js";
 import { MackerelClient } from "./client.js";
 
 const BASE_URL = "https://api.mackerelio.com";
@@ -8,6 +9,7 @@ const BASE_URL = "https://api.mackerelio.com";
 async function main() {
   const mackerelClient = new MackerelClient(BASE_URL, getApiKey());
   const alertTool = new AlertTool(mackerelClient);
+  const dashboardTool = new DashboardTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -83,6 +85,28 @@ get_alert_logs(alertId=3Yr)
       inputSchema: AlertTool.GetAlertLogsToolInput.shape,
     },
     alertTool.getAlertLogs,
+  );
+
+  server.registerTool(
+    "list_dashboards",
+    {
+      title: "List Dashboards",
+      description: `Retrieve all dashboards from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get a list of dashboards
+- Get ID and title of each dashboard
+
+<examples>
+### Get all dashboards
+\`\`\`
+list_dashboards()
+\`\`\`
+</example>
+`,
+      inputSchema: DashboardTool.ListDashboardsToolInput.shape,
+    },
+    dashboardTool.listDashboards,
   );
 
   const transport = new StdioServerTransport();
