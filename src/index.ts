@@ -19,8 +19,24 @@ async function main() {
     "list_alerts",
     {
       title: "List Alerts",
-      // TODO: enhance description
-      description: "Retrieve alerts from Mackerel",
+      description: `Retrieve alerts from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Check currently active alerts
+- Get a list of alerts including closed alerts
+
+<examples>
+### Get opening alerts
+\`\`\`
+list_alerts()
+\`\`\`
+
+### Get all alerts
+\`\`\`
+list_alerts(withClosed=true)
+\`\`\`
+</examples>
+`,
       inputSchema: AlertTool.ListAlertsToolInput.shape,
     },
     alertTool.listAlerts,
@@ -30,8 +46,18 @@ async function main() {
     "get_alert",
     {
       title: "Get Alert",
-      // TODO: enhance description
-      description: "Retrieve a specific alert by ID from Mackerel",
+      description: `Retrieve a specific alert by ID from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Investigate a particular alert
+
+<examples>
+### Get alert by ID
+\`\`\`
+get_alert(alertId=3Yr)
+\`\`\`
+</example>
+`,
       inputSchema: AlertTool.GetAlertToolInput.shape,
     },
     alertTool.getAlert,
@@ -41,8 +67,19 @@ async function main() {
     "get_alert_logs",
     {
       title: "Get Alert Logs",
-      // TODO: enhance description
-      description: "Retrieve logs for a specific alert by ID from Mackerel",
+      description: `Retrieve logs for a specific alert by ID from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- View status change history for a specific alert
+- Investigate alert transitions and their reasons
+
+<examples>
+### Get alert logs for the alert
+\`\`\`
+get_alert_logs(alertId=3Yr)
+\`\`\`
+</example>
+`,
       inputSchema: AlertTool.GetAlertLogsToolInput.shape,
     },
     alertTool.getAlertLogs,
