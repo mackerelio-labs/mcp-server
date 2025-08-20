@@ -71,4 +71,25 @@ export class MackerelClient {
   async getAlert(alertId: string) {
     return this.request<{ alert: any }>("GET", `/api/v0/alerts/${alertId}`);
   }
+
+  // GET /api/v0/alerts/{alertId}/logs
+  async getAlertLogs(
+    alertId: string,
+    nextId: string | undefined,
+    limit: number | undefined,
+  ): Promise<{ logs: any[]; nextId?: string }> {
+    const searchParams = new URLSearchParams();
+    if (nextId) {
+      searchParams.append("nextId", nextId);
+    }
+    if (limit !== undefined) {
+      searchParams.append("limit", limit.toString());
+    }
+
+    return this.request<{ logs: any[]; nextId?: string }>(
+      "GET",
+      `/api/v0/alerts/${alertId}/logs`,
+      { searchParams },
+    );
+  }
 }

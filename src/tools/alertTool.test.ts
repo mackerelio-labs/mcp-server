@@ -93,4 +93,55 @@ describe("Alert Tool", () => {
       ],
     });
   });
+
+  it("getAlertLogs", async () => {
+    const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
+    const alertTool = new AlertTool(mackerelClient);
+
+    const logs = [
+      {
+        id: "log1",
+        status: "CRITICAL",
+        trigger: "monitoring",
+        monitorId: "monitor1",
+        createdAt: 1600000000,
+      },
+      {
+        id: "log2",
+        status: "OK",
+        trigger: "manual",
+        monitorId: "monitor1",
+        createdAt: 1600000060,
+      },
+    ];
+    const nextId = "next-id";
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/alerts/alert1/logs", () => {
+        return HttpResponse.json({ logs, nextId });
+      }),
+    );
+
+    const server = setupServer(
+      "get_alert_logs",
+      { inputSchema: AlertTool.GetAlertLogsToolInput.shape },
+      alertTool.getAlertLogs,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_alert_logs",
+      arguments: {
+        alertId: "alert1",
+      },
+    });
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({ logs, nextId }),
+        },
+      ],
+    });
+  });
 });

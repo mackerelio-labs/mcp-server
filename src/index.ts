@@ -37,6 +37,17 @@ async function main() {
     alertTool.getAlert,
   );
 
+  server.registerTool(
+    "get_alert_logs",
+    {
+      title: "Get Alert Logs",
+      // TODO: enhance description
+      description: "Retrieve logs for a specific alert by ID from Mackerel",
+      inputSchema: AlertTool.GetAlertLogsToolInput.shape,
+    },
+    alertTool.getAlertLogs,
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Mackerel MCP Server running on stdio");
