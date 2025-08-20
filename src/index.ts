@@ -109,6 +109,61 @@ list_dashboards()
     dashboardTool.listDashboards,
   );
 
+  server.registerTool(
+    "get_dashboard",
+    {
+      title: "Get Dashboard",
+      description: `Retrieve a specific dashboard by ID from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get details of a specific dashboard
+- View dashboard configuration and widgets
+
+<examples>
+### Get dashboard by ID
+\`\`\`
+get_dashboard(dashboardId="3Yr")
+\`\`\`
+</examples>
+`,
+      inputSchema: DashboardTool.GetDashboardToolInput.shape,
+    },
+    dashboardTool.getDashboard,
+  );
+
+  server.registerTool(
+    "update_dashboard",
+    {
+      title: "Update Dashboard",
+      description: `Update a specific dashboard by ID in Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Modify dashboard title, memo, or URL path
+- Update dashboard widgets configuration
+
+<examples>
+### Update dashboard
+\`\`\`
+update_dashboard(
+  dashboardId="3Yr",
+  title="Updated Dashboard",
+  memo="Updated memo",
+  urlPath="updated path",
+  widgets=[{
+    type="markdown",
+    markdown="## Updated Markdown Widget",
+    title="Updated Title",
+    layout: { x: 0, y: 0, width: 6, height: 4 },
+  }]
+)
+\`\`\`
+</examples>
+`,
+      inputSchema: DashboardTool.UpdateDashboardToolInput.shape,
+    },
+    dashboardTool.updateDashboard,
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Mackerel MCP Server running on stdio");
