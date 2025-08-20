@@ -92,4 +92,9 @@ export class MackerelClient {
       { searchParams },
     );
   }
+
+  // GET /api/v0/dashboards
+  async getDashboards(): Promise<{ dashboards: any[] }> {
+    return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
+  }
 }
