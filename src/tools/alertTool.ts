@@ -50,4 +50,33 @@ export class AlertTool {
       async () => await this.mackerelClient.getAlert(alertId),
     );
   };
+
+  static GetAlertLogsToolInput = z.object({
+    alertId: z.string().describe("The ID of the alert to retrieve logs for"),
+    nextId: z
+      .string()
+      .optional()
+      .describe(
+        "If specified, alert logs older than the specified are retrieved",
+      ),
+    limit: z
+      .number()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe(
+        "The maximum number of alert logs to retrieve. When omitted, up to 100 logs are retrieved. The most that can be specified is 100",
+      ),
+  });
+
+  getAlertLogs = async ({
+    alertId,
+    nextId,
+    limit,
+  }: z.infer<typeof AlertTool.GetAlertLogsToolInput>) => {
+    return await buildToolResponse(
+      async () =>
+        await this.mackerelClient.getAlertLogs(alertId, nextId, limit),
+    );
+  };
 }

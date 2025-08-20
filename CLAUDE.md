@@ -33,10 +33,15 @@ src/
 
 Each tool follows this structure:
 1. Refer https://mackerel.io/api-docs/ for API documentation
-2. Define Zod schema for input validation
+2. Define Zod schema for input validation that includes ALL documented parameters
 3. Implement tool callback that builds URLSearchParams for API calls
 4. Use `buildToolResponse()` utility for consistent response formatting and error handling
 5. Tools are registered in `src/index.ts`
+6. Tests are written next to the tool implementation
+
+Notes:
+* About API Documentation Reference:
+  When viewing API documentation, first visit https://mackerel.io/api-docs/ and follow the endpoint links listed there to check the detailed specifications for the target endpoint.
 
 ### Testing
 
