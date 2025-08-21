@@ -97,4 +97,17 @@ export class MackerelClient {
   async getDashboards(): Promise<{ dashboards: any[] }> {
     return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
   }
+
+  // GET /api/v0/monitors
+  async getMonitors(): Promise<{ monitors: any[] }> {
+    return this.request<{ monitors: any[] }>("GET", "/api/v0/monitors");
+  }
+
+  // GET /api/v0/monitors/{monitorId}
+  async getMonitor(monitorId: string) {
+    return this.request<{ monitor: any }>(
+      "GET",
+      `/api/v0/monitors/${monitorId}`,
+    );
+  }
 }

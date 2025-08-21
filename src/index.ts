@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { AlertTool } from "./tools/alertTool.js";
 import { DashboardTool } from "./tools/dashboardTool.js";
+import { MonitorTool } from "./tools/monitorTool.js";
 import { MackerelClient } from "./client.js";
 
 const BASE_URL = "https://api.mackerelio.com";
@@ -10,6 +11,7 @@ async function main() {
   const mackerelClient = new MackerelClient(BASE_URL, getApiKey());
   const alertTool = new AlertTool(mackerelClient);
   const dashboardTool = new DashboardTool(mackerelClient);
+  const monitorTool = new MonitorTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -107,6 +109,49 @@ list_dashboards()
       inputSchema: DashboardTool.ListDashboardsToolInput.shape,
     },
     dashboardTool.listDashboards,
+  );
+
+  server.registerTool(
+    "list_monitors",
+    {
+      title: "List Monitors",
+      description: `Retrieve all monitor configurations from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get a list of all monitors
+- View monitor configurations
+
+<examples>
+### Get all monitors
+\`\`\`
+list_monitors()
+\`\`\`
+</examples>
+`,
+      inputSchema: MonitorTool.ListMonitorsToolInput.shape,
+    },
+    monitorTool.listMonitors,
+  );
+
+  server.registerTool(
+    "get_monitor",
+    {
+      title: "Get Monitor",
+      description: `Retrieve a specific monitor configuration by ID from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get details of a specific monitor
+
+<examples>
+### Get monitor by ID
+\`\`\`
+get_monitor(monitorId="2cSZzK3XfmB")
+\`\`\`
+</examples>
+`,
+      inputSchema: MonitorTool.GetMonitorToolInput.shape,
+    },
+    monitorTool.getMonitor,
   );
 
   const transport = new StdioServerTransport();
