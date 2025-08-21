@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { DashboardTool } from "./tools/dashboardTool.js";
+
 export class MackerelClient {
   private readonly baseUrl: string;
   private readonly apiKey: string;
@@ -96,6 +99,28 @@ export class MackerelClient {
   // GET /api/v0/dashboards
   async getDashboards(): Promise<{ dashboards: any[] }> {
     return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
+  }
+
+  // GET /api/v0/dashboards/{dashboardId}
+  async getDashboard(dashboardId: string) {
+    return this.request<any>("GET", `/api/v0/dashboards/${dashboardId}`);
+  }
+
+  private static WidgetArray = z.array(DashboardTool.WidgetSchema);
+
+  // PUT /api/v0/dashboards/{dashboardId}
+  async updateDashboard(
+    dashboardId: string,
+    dashboard: {
+      title: string;
+      memo: string;
+      urlPath: string;
+      widgets: z.infer<typeof MackerelClient.WidgetArray>;
+    },
+  ) {
+    return this.request<any>("PUT", `/api/v0/dashboards/${dashboardId}`, {
+      body: dashboard,
+    });
   }
 
   // GET /api/v0/hosts

@@ -60,4 +60,86 @@ describe("Dashboard Tool", () => {
       ],
     });
   });
+
+  it("getDashboard", async () => {
+    const dashboard = {
+      id: "dashboard1",
+      title: "My Dashboard",
+      memo: "Dashboard for monitoring",
+      urlPath: "my-dashboard",
+      widgets: [],
+      createdAt: 1600000000,
+      updatedAt: 1600000060,
+    };
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/dashboards/dashboard1", () => {
+        return HttpResponse.json(dashboard);
+      }),
+    );
+
+    const server = setupServer(
+      "get_dashboard",
+      { inputSchema: DashboardTool.GetDashboardToolInput.shape },
+      dashboardTool.getDashboard,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_dashboard",
+      arguments: { dashboardId: "dashboard1" },
+    });
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(dashboard),
+        },
+      ],
+    });
+  });
+
+  it("updateDashboard", async () => {
+    const updatedDashboard = {
+      id: "dashboard1",
+      title: "Updated Dashboard",
+      memo: "Updated description",
+      urlPath: "updated-path",
+      widgets: [],
+      createdAt: 1600000000,
+      updatedAt: 1600000240,
+    };
+    mswServer.use(
+      http.put(MACKEREL_BASE_URL + "/api/v0/dashboards/dashboard1", () => {
+        return HttpResponse.json(updatedDashboard);
+      }),
+    );
+
+    const server = setupServer(
+      "update_dashboard",
+      { inputSchema: DashboardTool.UpdateDashboardToolInput.shape },
+      dashboardTool.updateDashboard,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "update_dashboard",
+      arguments: {
+        dashboardId: "dashboard1",
+        title: "Updated Dashboard",
+        memo: "Updated description",
+        urlPath: "updated-path",
+        widgets: [],
+      },
+    });
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(updatedDashboard),
+        },
+      ],
+    });
+  });
 });
