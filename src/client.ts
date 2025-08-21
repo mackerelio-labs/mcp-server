@@ -98,6 +98,45 @@ export class MackerelClient {
     return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
   }
 
+  // GET /api/v0/hosts
+  async getHosts(
+    service: string | undefined,
+    role: string[] | undefined,
+    name: string | undefined,
+    status: string[] | undefined,
+    customIdentifier: string | undefined,
+  ): Promise<{ hosts: any[] }> {
+    const searchParams = new URLSearchParams();
+    if (service) {
+      searchParams.append("service", service);
+    }
+    if (role) {
+      for (const r of role) {
+        searchParams.append("role", r);
+      }
+    }
+    if (name) {
+      searchParams.append("name", name);
+    }
+    if (status) {
+      for (const s of status) {
+        searchParams.append("status", s);
+      }
+    }
+    if (customIdentifier) {
+      searchParams.append("customIdentifier", customIdentifier);
+    }
+
+    return this.request<{ hosts: any[] }>("GET", "/api/v0/hosts", {
+      searchParams,
+    });
+  }
+
+  // GET /api/v0/services
+  async getServices(): Promise<{ services: any[] }> {
+    return this.request<{ services: any[] }>("GET", "/api/v0/services");
+  }
+
   // GET /api/v0/monitors
   async getMonitors(): Promise<{ monitors: any[] }> {
     return this.request<{ monitors: any[] }>("GET", "/api/v0/monitors");

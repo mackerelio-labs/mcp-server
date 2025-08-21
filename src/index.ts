@@ -3,6 +3,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { AlertTool } from "./tools/alertTool.js";
 import { DashboardTool } from "./tools/dashboardTool.js";
 import { MonitorTool } from "./tools/monitorTool.js";
+import { HostTool } from "./tools/hostTool.js";
+import { ServiceTool } from "./tools/serviceTool.js";
 import { MackerelClient } from "./client.js";
 
 const BASE_URL = "https://api.mackerelio.com";
@@ -12,6 +14,8 @@ async function main() {
   const alertTool = new AlertTool(mackerelClient);
   const dashboardTool = new DashboardTool(mackerelClient);
   const monitorTool = new MonitorTool(mackerelClient);
+  const hostTool = new HostTool(mackerelClient);
+  const serviceTool = new ServiceTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -109,6 +113,60 @@ list_dashboards()
       inputSchema: DashboardTool.ListDashboardsToolInput.shape,
     },
     dashboardTool.listDashboards,
+  );
+  server.registerTool(
+    "list_hosts",
+    {
+      title: "List Hosts",
+      description: `Retrieve hosts from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get a list of hosts
+- Filter hosts by various criteria (service, role, name, etc.)
+- Check host status and information
+
+<examples>
+### Get all hosts
+\`\`\`
+list_hosts()
+\`\`\`
+
+### Get hosts for a specific role
+\`\`\`
+list_hosts(service="web",role=["app"])
+\`\`\`
+
+### Get hosts by status
+\`\`\`
+list_hosts(status=["working","standby"])
+\`\`\`
+</examples>
+`,
+      inputSchema: HostTool.ListHostsToolInput.shape,
+    },
+    hostTool.listHosts,
+  );
+
+  server.registerTool(
+    "list_services",
+    {
+      title: "List Services",
+      description: `Retrieve all services from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get a list of services
+- View service names, memos, and roles
+
+<examples>
+### Get all services
+\`\`\`
+list_services()
+\`\`\`
+</examples>
+`,
+      inputSchema: ServiceTool.ListServicesToolInput.shape,
+    },
+    serviceTool.listServices,
   );
 
   server.registerTool(
