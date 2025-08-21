@@ -1,0 +1,64 @@
+# Mackerel MCP Server
+
+A Model Context Protocol server for interacting with [Mackerel](https://mackerel.io).
+
+# Configuration
+
+The MCP server can be run either via Docker or npx.
+
+## Running via Docker
+
+```json
+{
+  "mcpServers": {
+    "mackerel": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e",
+        "MACKEREL_API_KEY",
+        "-----TBD_IMAGE_NAME"
+      ],
+      "env": {
+        "MACKEREL_API_KEY": "${MACKEREL_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Running via npx
+
+```json
+{
+  "mcpServers": {
+    "mackerel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "-----TBD_PACKAGE_NAME"
+      ],
+      "env": {
+        "MACKEREL_API_KEY": "${MACKEREL_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+# Available tools
+
+* `list_alerts` - Retrieve alerts.
+* `get_alert` - Retrieve a specific alert.
+* `get_alert_logs` - Retrieve logs for a specific alert.
+* `list_dashboards` - Retrieve dashboards.
+* `get_dashboard` - Retrieve a specific dashboard.
+* `update_dashboard` - Update a specific dashboard.
+* `list_hosts` - Retrieve hosts.
+* `get_host_metrics` - Retrieve metrics data for a specific host.
+* `list_services` - Retrieve services.
+* `get_service_metrics` - Retrieve metrics data for a specific service.
+* `list_monitors` - Retrieve monitor configurations.
+* `get_monitor` - Retrieve a specific monitor configuration.
