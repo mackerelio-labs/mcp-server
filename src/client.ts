@@ -157,9 +157,47 @@ export class MackerelClient {
     });
   }
 
+  // GET /api/v0/hosts/{hostId}/metrics
+  async getHostMetrics(
+    hostId: string,
+    name: string,
+    from: number,
+    to: number,
+  ): Promise<{ metrics: Array<{ time: number; value: number }> }> {
+    const searchParams = new URLSearchParams();
+    searchParams.append("name", name);
+    searchParams.append("from", from.toString());
+    searchParams.append("to", to.toString());
+
+    return this.request<{ metrics: Array<{ time: number; value: number }> }>(
+      "GET",
+      `/api/v0/hosts/${hostId}/metrics`,
+      { searchParams },
+    );
+  }
+
   // GET /api/v0/services
   async getServices(): Promise<{ services: any[] }> {
     return this.request<{ services: any[] }>("GET", "/api/v0/services");
+  }
+
+  // GET /api/v0/services/{serviceName}/metrics
+  async getServiceMetrics(
+    serviceName: string,
+    name: string,
+    from: number,
+    to: number,
+  ): Promise<{ metrics: Array<{ time: number; value: number }> }> {
+    const searchParams = new URLSearchParams();
+    searchParams.append("name", name);
+    searchParams.append("from", from.toString());
+    searchParams.append("to", to.toString());
+
+    return this.request<{ metrics: Array<{ time: number; value: number }> }>(
+      "GET",
+      `/api/v0/services/${serviceName}/metrics`,
+      { searchParams },
+    );
   }
 
   // GET /api/v0/monitors

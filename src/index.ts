@@ -6,6 +6,8 @@ import { MonitorTool } from "./tools/monitorTool.js";
 import { HostTool } from "./tools/hostTool.js";
 import { ServiceTool } from "./tools/serviceTool.js";
 import { MackerelClient } from "./client.js";
+import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
+import { HostMetricsTool } from "./tools/hostMetricsTool.js";
 
 const BASE_URL = "https://api.mackerelio.com";
 
@@ -15,7 +17,9 @@ async function main() {
   const dashboardTool = new DashboardTool(mackerelClient);
   const monitorTool = new MonitorTool(mackerelClient);
   const hostTool = new HostTool(mackerelClient);
+  const hostMetricsTool = new HostMetricsTool(mackerelClient);
   const serviceTool = new ServiceTool(mackerelClient);
+  const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -204,6 +208,28 @@ list_hosts(status=["working","standby"])
   );
 
   server.registerTool(
+    "get_host_metrics",
+    {
+      title: "Get Host Metrics",
+      description: `Retrieve metrics data for a specific host from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get metrics data for a specific host
+- Analyze host performance over time
+
+<examples>
+### Get all metrics for a host
+\`\`\`
+get_host_metrics(hostId="host123", name="loadavg5", from=1609459200, to=1609462800)
+\`\`\`
+</examples>
+`,
+      inputSchema: HostMetricsTool.GetHostMetricsToolInput.shape,
+    },
+    hostMetricsTool.getHostMetrics,
+  );
+
+  server.registerTool(
     "list_services",
     {
       title: "List Services",
@@ -223,6 +249,27 @@ list_services()
       inputSchema: ServiceTool.ListServicesToolInput.shape,
     },
     serviceTool.listServices,
+  );
+
+  server.registerTool(
+    "get_service_metrics",
+    {
+      title: "Get Service Metrics",
+      description: `Retrieve metrics data for a specific service from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Get metrics data for a specific service
+
+<examples>
+### Get service metrics
+\`\`\`
+get_service_metrics(serviceName="web", name="response_time", from=1609459200, to=1609462800)
+\`\`\`
+</examples>
+`,
+      inputSchema: ServiceMetricsTool.GetServiceMetricsToolInput.shape,
+    },
+    serviceMetricsTool.getServiceMetrics,
   );
 
   server.registerTool(
