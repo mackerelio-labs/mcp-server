@@ -24,6 +24,7 @@
   "bugs": {
     "url": "https://github.com/mackerelio-labs/mackerel-mcp/issues"
   },
+  "author": "Mackerel <platform+mackerel@hatena.ne.jp> (http://mackerel.io/)",
   "homepage": "https://github.com/mackerelio-labs/mackerel-mcp#readme",
   "keywords": [
     "mackerel",
