@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsx src/index.ts",
-    "inspector": "npx @modelcontextprotocol/inspector -e MACKEREL_API_KEY=$MACKEREL_API_KEY tsx src/index.ts",
+    "inspector": "npx @modelcontextprotocol/inspector -e MACKEREL_APIKEY=$MACKEREL_APIKEY tsx src/index.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "test": "vitest run"

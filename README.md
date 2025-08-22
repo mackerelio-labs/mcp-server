@@ -18,11 +18,11 @@ The MCP server can be run either via Docker or npx.
         "--rm",
         "-i",
         "-e",
-        "MACKEREL_API_KEY",
+        "MACKEREL_APIKEY",
         "-----TBD_IMAGE_NAME"
       ],
       "env": {
-        "MACKEREL_API_KEY": "${MACKEREL_API_KEY}"
+        "MACKEREL_APIKEY": "${MACKEREL_APIKEY}"
       }
     }
   }
@@ -41,7 +41,7 @@ The MCP server can be run either via Docker or npx.
         "-----TBD_PACKAGE_NAME"
       ],
       "env": {
-        "MACKEREL_API_KEY": "${MACKEREL_API_KEY}"
+        "MACKEREL_APIKEY": "${MACKEREL_APIKEY}"
       }
     }
   }

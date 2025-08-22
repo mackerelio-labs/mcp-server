@@ -321,9 +321,9 @@ get_monitor(monitorId="2cSZzK3XfmB")
 }
 
 function getApiKey(): string {
-  let apiKey = process.env.MACKEREL_API_KEY;
+  let apiKey = process.env.MACKEREL_APIKEY;
   if (!apiKey) {
-    throw new Error("MACKEREL_API_KEY environment variable is not set.");
+    throw new Error("MACKEREL_APIKEY environment variable is not set.");
   }
 
   return apiKey;
