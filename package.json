@@ -23,10 +23,10 @@
   ],
   "types": "build/index.d.ts",
   "bugs": {
-    "url": "https://github.com/mackerelio-labs/mackerel-mcp/issues"
+    "url": "https://github.com/mackerelio-labs/mcp-server/issues"
   },
   "author": "Mackerel <platform+mackerel@hatena.ne.jp> (http://mackerel.io/)",
-  "homepage": "https://github.com/mackerelio-labs/mackerel-mcp#readme",
+  "homepage": "https://github.com/mackerelio-labs/mcp-server#readme",
   "keywords": [
     "mackerel",
     "model-context-protocol",
