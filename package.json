@@ -1,6 +1,9 @@
 {
   "name": "mackerel-mcp",
   "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "A Model Context Protocol server for interacting with Mackerel",
   "main": "build/index.js",
   "type": "module",
@@ -17,6 +20,16 @@
     "build",
     "README.md",
     "LICENSE"
+  ],
+  "bugs": {
+    "url": "https://github.com/mackerelio-labs/mackerel-mcp/issues"
+  },
+  "author": "Mackerel <platform+mackerel@hatena.ne.jp> (http://mackerel.io/)",
+  "homepage": "https://github.com/mackerelio-labs/mackerel-mcp#readme",
+  "keywords": [
+    "mackerel",
+    "model-context-protocol",
+    "mcp"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.2",
