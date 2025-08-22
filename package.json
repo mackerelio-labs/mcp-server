@@ -12,7 +12,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "test": "vitest run"
   },
-  "license": "ISC",
+  "license": "Apache-2.0",
   "files": [
     "build",
     "README.md",
