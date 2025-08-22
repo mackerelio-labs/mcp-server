@@ -11,7 +11,7 @@ jobs:
       - uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
         id: app-token
         with:
-          app-id: 82212955
+          app-id: 1823993
           private-key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
