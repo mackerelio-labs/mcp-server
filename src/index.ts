@@ -23,7 +23,7 @@ async function main() {
 
   // Create an MCP server
   const server = new McpServer({
-    name: "mackerel-mcp",
+    name: "@mackerel/mcp-server",
     version: "0.0.1",
   });
 
