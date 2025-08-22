@@ -8,7 +8,7 @@
   "main": "build/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsdown",
     "dev": "tsx src/index.ts",
     "inspector": "npx @modelcontextprotocol/inspector -e MACKEREL_API_KEY=$MACKEREL_API_KEY tsx src/index.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
@@ -21,6 +21,7 @@
     "README.md",
     "LICENSE"
   ],
+  "types": "build/index.d.ts",
   "bugs": {
     "url": "https://github.com/mackerelio-labs/mackerel-mcp/issues"
   },
@@ -39,6 +40,7 @@
     "@types/node": "^24.2.1",
     "msw": "^2.10.5",
     "prettier": "^3.6.2",
+    "tsdown": "^0.14.1",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
