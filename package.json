@@ -6,6 +6,9 @@
   },
   "description": "A Model Context Protocol server for interacting with Mackerel",
   "main": "build/index.js",
+  "bin": {
+    "mcp-server": "build/index.js"
+  },
   "type": "module",
   "scripts": {
     "build": "tsdown",
