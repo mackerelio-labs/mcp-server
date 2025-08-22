@@ -1,8 +1,8 @@
 {
   "name": "mackerel-mcp",
   "version": "0.0.1",
-  "description": "TBD",
-  "main": "index.js",
+  "description": "A Model Context Protocol server for interacting with Mackerel",
+  "main": "build/index.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,12 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "test": "vitest run"
   },
-  "license": "TBD",
+  "license": "Apache-2.0",
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.2",
     "zod": "^3.25.76"
