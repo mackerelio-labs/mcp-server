@@ -5,4 +5,7 @@ export default defineConfig({
   outDir: "build",
   clean: true,
   minify: true,
+  banner: {
+    js: "#!/usr/bin/env node",
+  },
 });
