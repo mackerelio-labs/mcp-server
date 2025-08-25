@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 COPY tsconfig.json .
+COPY tsdown.config.ts .
 
 RUN npm ci
 
