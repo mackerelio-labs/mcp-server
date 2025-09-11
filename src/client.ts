@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DashboardTool } from "./tools/dashboardTool.js";
+import { applyPagination } from "./tools/util.js";
 
 export class MackerelClient {
   private readonly baseUrl: string;
@@ -130,7 +131,12 @@ export class MackerelClient {
     name: string | undefined,
     status: string[] | undefined,
     customIdentifier: string | undefined,
-  ): Promise<{ hosts: any[] }> {
+    limit?: number,
+    offset?: number,
+  ): Promise<{
+    hosts: any[];
+    pageInfo: { hasNextPage: boolean; hasPrevPage: boolean };
+  }> {
     const searchParams = new URLSearchParams();
     if (service) {
       searchParams.append("service", service);
@@ -152,9 +158,33 @@ export class MackerelClient {
       searchParams.append("customIdentifier", customIdentifier);
     }
 
-    return this.request<{ hosts: any[] }>("GET", "/api/v0/hosts", {
-      searchParams,
+    const response = await this.request<{ hosts: any[] }>(
+      "GET",
+      "/api/v0/hosts",
+      {
+        searchParams,
+      },
+    );
+
+    // Apply client-side pagination since Mackerel API doesn't support it natively
+    const effectiveLimit = limit || 20;
+    const effectiveOffset = offset || 0;
+    const totalHosts = response.hosts.length;
+
+    const paginatedHosts = applyPagination(response.hosts, {
+      limit: effectiveLimit,
+      offset: effectiveOffset,
     });
+
+    const pageInfo = {
+      hasPrevPage: effectiveOffset > 0,
+      hasNextPage: effectiveOffset + effectiveLimit < totalHosts,
+    };
+
+    return {
+      hosts: paginatedHosts,
+      pageInfo,
+    };
   }
 
   // GET /api/v0/hosts/{hostId}/metrics

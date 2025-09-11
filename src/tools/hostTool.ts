@@ -26,6 +26,19 @@ export class HostTool {
       .describe(
         "An identifier for the host that is user-specific and unique to the organization (registered at Register Host Information or Update Host Information API)",
       ),
+    limit: z
+      .number()
+      .int()
+      .positive()
+      .max(100)
+      .optional()
+      .describe("Maximum number of hosts to return (default: 20, max: 100)"),
+    offset: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe("Number of hosts to skip (default: 0)"),
   });
 
   listHosts = async ({
@@ -34,16 +47,21 @@ export class HostTool {
     name,
     status,
     customIdentifier,
+    limit = 20,
+    offset = 0,
   }: z.infer<typeof HostTool.ListHostsToolInput>) => {
-    return await buildToolResponse(
-      async () =>
-        await this.mackerelClient.getHosts(
-          service,
-          role,
-          name,
-          status,
-          customIdentifier,
-        ),
-    );
+    return await buildToolResponse(async () => {
+      const result = await this.mackerelClient.getHosts(
+        service,
+        role,
+        name,
+        status,
+        customIdentifier,
+        limit,
+        offset,
+      );
+
+      return result;
+    });
   };
 }

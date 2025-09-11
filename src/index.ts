@@ -186,7 +186,7 @@ update_dashboard(
 - Check host status and information
 
 <examples>
-### Get all hosts
+### Get all hosts (first 20)
 \`\`\`
 list_hosts()
 \`\`\`
@@ -196,9 +196,19 @@ list_hosts()
 list_hosts(service="web",role=["app"])
 \`\`\`
 
-### Get hosts by status
+### Get hosts by status with pagination
 \`\`\`
-list_hosts(status=["working","standby"])
+list_hosts(status=["working","standby"], limit=10, offset=0)
+\`\`\`
+
+### Get hosts in summary format (reduced response size)
+\`\`\`
+list_hosts(summary=true)
+\`\`\`
+
+### Get next page of hosts
+\`\`\`
+list_hosts(limit=20, offset=20)
 \`\`\`
 </examples>
 `,
