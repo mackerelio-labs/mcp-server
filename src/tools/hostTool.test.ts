@@ -57,7 +57,10 @@ describe("Host Tool", () => {
       content: [
         {
           type: "text",
-          text: JSON.stringify({ hosts }),
+          text: JSON.stringify({
+            hosts,
+            pageInfo: { hasPrevPage: false, hasNextPage: false },
+          }),
         },
       ],
     });
@@ -106,7 +109,10 @@ describe("Host Tool", () => {
       content: [
         {
           type: "text",
-          text: JSON.stringify({ hosts }),
+          text: JSON.stringify({
+            hosts,
+            pageInfo: { hasPrevPage: false, hasNextPage: false },
+          }),
         },
       ],
     });
@@ -149,7 +155,102 @@ describe("Host Tool", () => {
       content: [
         {
           type: "text",
-          text: JSON.stringify({ hosts: expectedHosts }),
+          text: JSON.stringify({
+            hosts: expectedHosts,
+            pageInfo: { hasPrevPage: false, hasNextPage: true },
+          }),
+        },
+      ],
+    });
+  });
+
+  it("listHosts with pagination - middle page", async () => {
+    const allHosts = Array.from({ length: 25 }, (_, i) => ({
+      id: `host${i}`,
+      name: `host-${i.toString().padStart(2, "0")}`,
+      displayName: `Host ${i}`,
+      status: "working",
+      roles: {},
+    }));
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/hosts", () => {
+        return HttpResponse.json({
+          hosts: allHosts,
+        });
+      }),
+    );
+
+    const server = setupServer(
+      "list_hosts",
+      { inputSchema: HostTool.ListHostsToolInput.shape },
+      hostTool.listHosts,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "list_hosts",
+      arguments: {
+        limit: 10,
+        offset: 10,
+      },
+    });
+
+    const expectedHosts = allHosts.slice(10, 20);
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            hosts: expectedHosts,
+            pageInfo: { hasPrevPage: true, hasNextPage: true },
+          }),
+        },
+      ],
+    });
+  });
+
+  it("listHosts with pagination - last page", async () => {
+    const allHosts = Array.from({ length: 25 }, (_, i) => ({
+      id: `host${i}`,
+      name: `host-${i.toString().padStart(2, "0")}`,
+      displayName: `Host ${i}`,
+      status: "working",
+      roles: {},
+    }));
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/hosts", () => {
+        return HttpResponse.json({
+          hosts: allHosts,
+        });
+      }),
+    );
+
+    const server = setupServer(
+      "list_hosts",
+      { inputSchema: HostTool.ListHostsToolInput.shape },
+      hostTool.listHosts,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "list_hosts",
+      arguments: {
+        limit: 10,
+        offset: 20,
+      },
+    });
+
+    const expectedHosts = allHosts.slice(20, 25);
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            hosts: expectedHosts,
+            pageInfo: { hasPrevPage: true, hasNextPage: false },
+          }),
         },
       ],
     });

@@ -133,7 +133,10 @@ export class MackerelClient {
     customIdentifier: string | undefined,
     limit?: number,
     offset?: number,
-  ): Promise<{ hosts: any[] }> {
+  ): Promise<{
+    hosts: any[];
+    pageInfo: { hasNextPage: boolean; hasPrevPage: boolean };
+  }> {
     const searchParams = new URLSearchParams();
     if (service) {
       searchParams.append("service", service);
@@ -164,11 +167,23 @@ export class MackerelClient {
     );
 
     // Apply client-side pagination since Mackerel API doesn't support it natively
+    const effectiveLimit = limit || 20;
+    const effectiveOffset = offset || 0;
+    const totalHosts = response.hosts.length;
+
+    const paginatedHosts = applyPagination(response.hosts, {
+      limit: effectiveLimit,
+      offset: effectiveOffset,
+    });
+
+    const pageInfo = {
+      hasPrevPage: effectiveOffset > 0,
+      hasNextPage: effectiveOffset + effectiveLimit < totalHosts,
+    };
+
     return {
-      hosts: applyPagination(response.hosts, {
-        limit: limit || 20,
-        offset: offset || 0,
-      }),
+      hosts: paginatedHosts,
+      pageInfo,
     };
   }
 
