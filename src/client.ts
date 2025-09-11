@@ -20,7 +20,7 @@ export class MackerelClient {
     }: {
       searchParams?: URLSearchParams;
       body?: any;
-    } = {}
+    } = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${path}${searchParams ? "?" + searchParams.toString() : ""}`;
     const headers: HeadersInit = {
@@ -51,7 +51,7 @@ export class MackerelClient {
   async getAlerts(
     withClosed: boolean | undefined,
     nextId: string | undefined,
-    limit: number | undefined
+    limit: number | undefined,
   ): Promise<{ alerts: any[]; nextId?: string }> {
     const searchParams = new URLSearchParams();
     if (withClosed !== undefined) {
@@ -67,7 +67,7 @@ export class MackerelClient {
     return this.request<{ alerts: any[]; nextId?: string }>(
       "GET",
       "/api/v0/alerts",
-      { searchParams }
+      { searchParams },
     );
   }
 
@@ -80,7 +80,7 @@ export class MackerelClient {
   async getAlertLogs(
     alertId: string,
     nextId: string | undefined,
-    limit: number | undefined
+    limit: number | undefined,
   ): Promise<{ logs: any[]; nextId?: string }> {
     const searchParams = new URLSearchParams();
     if (nextId) {
@@ -93,7 +93,7 @@ export class MackerelClient {
     return this.request<{ logs: any[]; nextId?: string }>(
       "GET",
       `/api/v0/alerts/${alertId}/logs`,
-      { searchParams }
+      { searchParams },
     );
   }
 
@@ -117,7 +117,7 @@ export class MackerelClient {
       memo: string;
       urlPath: string;
       widgets: z.infer<typeof MackerelClient.WidgetArray>;
-    }
+    },
   ) {
     return this.request<any>("PUT", `/api/v0/dashboards/${dashboardId}`, {
       body: dashboard,
@@ -132,7 +132,7 @@ export class MackerelClient {
     status: string[] | undefined,
     customIdentifier: string | undefined,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<{ hosts: any[] }> {
     const searchParams = new URLSearchParams();
     if (service) {
@@ -160,7 +160,7 @@ export class MackerelClient {
       "/api/v0/hosts",
       {
         searchParams,
-      }
+      },
     );
 
     // Apply client-side pagination since Mackerel API doesn't support it natively
@@ -177,7 +177,7 @@ export class MackerelClient {
     hostId: string,
     name: string,
     from: number,
-    to: number
+    to: number,
   ): Promise<{ metrics: Array<{ time: number; value: number }> }> {
     const searchParams = new URLSearchParams();
     searchParams.append("name", name);
@@ -187,7 +187,7 @@ export class MackerelClient {
     return this.request<{ metrics: Array<{ time: number; value: number }> }>(
       "GET",
       `/api/v0/hosts/${hostId}/metrics`,
-      { searchParams }
+      { searchParams },
     );
   }
 
@@ -201,7 +201,7 @@ export class MackerelClient {
     serviceName: string,
     name: string,
     from: number,
-    to: number
+    to: number,
   ): Promise<{ metrics: Array<{ time: number; value: number }> }> {
     const searchParams = new URLSearchParams();
     searchParams.append("name", name);
@@ -211,7 +211,7 @@ export class MackerelClient {
     return this.request<{ metrics: Array<{ time: number; value: number }> }>(
       "GET",
       `/api/v0/services/${serviceName}/metrics`,
-      { searchParams }
+      { searchParams },
     );
   }
 
@@ -224,7 +224,7 @@ export class MackerelClient {
   async getMonitor(monitorId: string) {
     return this.request<{ monitor: any }>(
       "GET",
-      `/api/v0/monitors/${monitorId}`
+      `/api/v0/monitors/${monitorId}`,
     );
   }
 }
