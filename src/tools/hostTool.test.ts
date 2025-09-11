@@ -38,13 +38,13 @@ describe("Host Tool", () => {
         return HttpResponse.json({
           hosts,
         });
-      })
+      }),
     );
 
     const server = setupServer(
       "list_hosts",
       { inputSchema: HostTool.ListHostsToolInput.shape },
-      hostTool.listHosts
+      hostTool.listHosts,
     );
     const { client } = await setupClient(server);
 
@@ -84,13 +84,13 @@ describe("Host Tool", () => {
         return HttpResponse.json({
           hosts,
         });
-      })
+      }),
     );
 
     const server = setupServer(
       "list_hosts",
       { inputSchema: HostTool.ListHostsToolInput.shape },
-      hostTool.listHosts
+      hostTool.listHosts,
     );
     const { client } = await setupClient(server);
 
@@ -126,13 +126,13 @@ describe("Host Tool", () => {
         return HttpResponse.json({
           hosts: allHosts,
         });
-      })
+      }),
     );
 
     const server = setupServer(
       "list_hosts",
       { inputSchema: HostTool.ListHostsToolInput.shape },
-      hostTool.listHosts
+      hostTool.listHosts,
     );
     const { client } = await setupClient(server);
 
