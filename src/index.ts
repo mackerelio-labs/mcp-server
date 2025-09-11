@@ -51,7 +51,7 @@ list_alerts(withClosed=true)
 `,
       inputSchema: AlertTool.ListAlertsToolInput.shape,
     },
-    alertTool.listAlerts,
+    alertTool.listAlerts
   );
 
   server.registerTool(
@@ -72,7 +72,7 @@ get_alert(alertId=3Yr)
 `,
       inputSchema: AlertTool.GetAlertToolInput.shape,
     },
-    alertTool.getAlert,
+    alertTool.getAlert
   );
 
   server.registerTool(
@@ -94,7 +94,7 @@ get_alert_logs(alertId=3Yr)
 `,
       inputSchema: AlertTool.GetAlertLogsToolInput.shape,
     },
-    alertTool.getAlertLogs,
+    alertTool.getAlertLogs
   );
 
   server.registerTool(
@@ -116,7 +116,7 @@ list_dashboards()
 `,
       inputSchema: DashboardTool.ListDashboardsToolInput.shape,
     },
-    dashboardTool.listDashboards,
+    dashboardTool.listDashboards
   );
 
   server.registerTool(
@@ -138,7 +138,7 @@ get_dashboard(dashboardId="3Yr")
 `,
       inputSchema: DashboardTool.GetDashboardToolInput.shape,
     },
-    dashboardTool.getDashboard,
+    dashboardTool.getDashboard
   );
 
   server.registerTool(
@@ -171,7 +171,7 @@ update_dashboard(
 `,
       inputSchema: DashboardTool.UpdateDashboardToolInput.shape,
     },
-    dashboardTool.updateDashboard,
+    dashboardTool.updateDashboard
   );
 
   server.registerTool(
@@ -186,7 +186,7 @@ update_dashboard(
 - Check host status and information
 
 <examples>
-### Get all hosts
+### Get all hosts (first 20)
 \`\`\`
 list_hosts()
 \`\`\`
@@ -196,15 +196,25 @@ list_hosts()
 list_hosts(service="web",role=["app"])
 \`\`\`
 
-### Get hosts by status
+### Get hosts by status with pagination
 \`\`\`
-list_hosts(status=["working","standby"])
+list_hosts(status=["working","standby"], limit=10, offset=0)
+\`\`\`
+
+### Get hosts in summary format (reduced response size)
+\`\`\`
+list_hosts(summary=true)
+\`\`\`
+
+### Get next page of hosts
+\`\`\`
+list_hosts(limit=20, offset=20)
 \`\`\`
 </examples>
 `,
       inputSchema: HostTool.ListHostsToolInput.shape,
     },
-    hostTool.listHosts,
+    hostTool.listHosts
   );
 
   server.registerTool(
@@ -226,7 +236,7 @@ get_host_metrics(hostId="host123", name="loadavg5", from=1609459200, to=16094628
 `,
       inputSchema: HostMetricsTool.GetHostMetricsToolInput.shape,
     },
-    hostMetricsTool.getHostMetrics,
+    hostMetricsTool.getHostMetrics
   );
 
   server.registerTool(
@@ -248,7 +258,7 @@ list_services()
 `,
       inputSchema: ServiceTool.ListServicesToolInput.shape,
     },
-    serviceTool.listServices,
+    serviceTool.listServices
   );
 
   server.registerTool(
@@ -269,7 +279,7 @@ get_service_metrics(serviceName="web", name="response_time", from=1609459200, to
 `,
       inputSchema: ServiceMetricsTool.GetServiceMetricsToolInput.shape,
     },
-    serviceMetricsTool.getServiceMetrics,
+    serviceMetricsTool.getServiceMetrics
   );
 
   server.registerTool(
@@ -291,7 +301,7 @@ list_monitors()
 `,
       inputSchema: MonitorTool.ListMonitorsToolInput.shape,
     },
-    monitorTool.listMonitors,
+    monitorTool.listMonitors
   );
 
   server.registerTool(
@@ -312,7 +322,7 @@ get_monitor(monitorId="2cSZzK3XfmB")
 `,
       inputSchema: MonitorTool.GetMonitorToolInput.shape,
     },
-    monitorTool.getMonitor,
+    monitorTool.getMonitor
   );
 
   const transport = new StdioServerTransport();

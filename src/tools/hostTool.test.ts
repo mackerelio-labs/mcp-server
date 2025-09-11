@@ -111,4 +111,112 @@ describe("Host Tool", () => {
       ],
     });
   });
+
+  it("listHosts with pagination", async () => {
+    const allHosts = Array.from({ length: 25 }, (_, i) => ({
+      id: `host${i}`,
+      name: `host-${i.toString().padStart(2, "0")}`,
+      displayName: `Host ${i}`,
+      status: "working",
+      roles: {},
+    }));
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/hosts", () => {
+        return HttpResponse.json({
+          hosts: allHosts,
+        });
+      }),
+    );
+
+    const server = setupServer(
+      "list_hosts",
+      { inputSchema: HostTool.ListHostsToolInput.shape },
+      hostTool.listHosts,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "list_hosts",
+      arguments: {
+        limit: 10,
+        offset: 0,
+      },
+    });
+
+    const expectedHosts = allHosts.slice(0, 10);
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({ hosts: expectedHosts }),
+        },
+      ],
+    });
+  });
+
+  it("listHosts with summary option", async () => {
+    const hosts = [
+      {
+        id: "host1",
+        name: "web-01",
+        displayName: "Web Server 1",
+        status: "working",
+        isRetired: false,
+        memo: "Production web server",
+        createdAt: "2023-01-01T00:00:00Z",
+        roles: {
+          web: ["app"],
+        },
+        interfaces: [],
+        customIdentifier: "custom-id-1",
+      },
+    ];
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/hosts", () => {
+        return HttpResponse.json({
+          hosts,
+        });
+      }),
+    );
+
+    const server = setupServer(
+      "list_hosts",
+      { inputSchema: HostTool.ListHostsToolInput.shape },
+      hostTool.listHosts,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "list_hosts",
+      arguments: {
+        summary: true,
+      },
+    });
+
+    const expectedSummary = {
+      hosts: [
+        {
+          id: "host1",
+          name: "web-01",
+          displayName: "Web Server 1",
+          status: "working",
+          isRetired: false,
+          memo: "Production web server",
+          createdAt: "2023-01-01T00:00:00Z",
+        },
+      ],
+      total: 1,
+    };
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(expectedSummary),
+        },
+      ],
+    });
+  });
 });

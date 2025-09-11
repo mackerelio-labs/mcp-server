@@ -1,5 +1,22 @@
 import { ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+export interface PaginationOptions {
+  limit?: number;
+  offset?: number;
+}
+
+export interface SummaryOptions {
+  summary?: boolean;
+}
+
+export function applyPagination<T extends any[]>(
+  items: T,
+  options: PaginationOptions,
+): T {
+  const { limit = 20, offset = 0 } = options;
+  return items.slice(offset, offset + limit) as T;
+}
+
 export async function buildToolResponse(
   fn: () => Promise<unknown>,
 ): Promise<Awaited<ReturnType<ToolCallback>>> {
