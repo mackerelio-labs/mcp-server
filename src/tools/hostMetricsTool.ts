@@ -27,6 +27,7 @@ export class HostMetricsTool {
     return await buildToolResponse(
       async () =>
         await this.mackerelClient.getHostMetrics(hostId, name, from, to),
+      "get_host_metrics",
     );
   };
 }

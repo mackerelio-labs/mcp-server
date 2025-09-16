@@ -5,14 +5,55 @@ import { buildToolResponse } from "./util.js";
 export class DashboardTool {
   constructor(private mackerelClient: MackerelClient) {}
 
-  static ListDashboardsToolInput = z.object({});
+  static ListDashboardsToolInput = z.object({
+    limit: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Maximum number of dashboards to return (default: 20)"),
+    offset: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe("Number of dashboards to skip (default: 0)"),
+    summary: z
+      .boolean()
+      .optional()
+      .default(true)
+      .describe(
+        "If true, omit widget details to reduce response size (default: true)",
+      ),
+  });
 
-  listDashboards = async ({}: z.infer<
-    typeof DashboardTool.ListDashboardsToolInput
-  >) => {
-    return await buildToolResponse(
-      async () => await this.mackerelClient.getDashboards(),
-    );
+  listDashboards = async ({
+    limit,
+    offset,
+    summary = true,
+  }: z.infer<typeof DashboardTool.ListDashboardsToolInput>) => {
+    return await buildToolResponse(async () => {
+      const result = await this.mackerelClient.getDashboards(limit, offset);
+
+      if (summary) {
+        const summaryDashboards = result.dashboards.map((dashboard) => ({
+          id: dashboard.id,
+          title: dashboard.title,
+          memo: dashboard.memo,
+          urlPath: dashboard.urlPath,
+          createdAt: dashboard.createdAt,
+          updatedAt: dashboard.updatedAt,
+          widgetCount: dashboard.widgets?.length || 0,
+        }));
+
+        return {
+          dashboards: summaryDashboards,
+          pageInfo: result.pageInfo,
+        };
+      }
+
+      return result;
+    });
   };
 
   static GetDashboardToolInput = z.object({
