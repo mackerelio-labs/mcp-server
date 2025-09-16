@@ -32,6 +32,7 @@ export class ServiceMetricsTool {
           from,
           to,
         ),
+      "get_service_metrics",
     );
   };
 }
