@@ -51,7 +51,7 @@ list_alerts(withClosed=true)
 `,
       inputSchema: AlertTool.ListAlertsToolInput.shape,
     },
-    alertTool.listAlerts,
+    alertTool.listAlerts
   );
 
   server.registerTool(
@@ -72,7 +72,7 @@ get_alert(alertId=3Yr)
 `,
       inputSchema: AlertTool.GetAlertToolInput.shape,
     },
-    alertTool.getAlert,
+    alertTool.getAlert
   );
 
   server.registerTool(
@@ -94,7 +94,7 @@ get_alert_logs(alertId=3Yr)
 `,
       inputSchema: AlertTool.GetAlertLogsToolInput.shape,
     },
-    alertTool.getAlertLogs,
+    alertTool.getAlertLogs
   );
 
   server.registerTool(
@@ -116,7 +116,7 @@ list_dashboards()
 `,
       inputSchema: DashboardTool.ListDashboardsToolInput.shape,
     },
-    dashboardTool.listDashboards,
+    dashboardTool.listDashboards
   );
 
   server.registerTool(
@@ -138,7 +138,7 @@ get_dashboard(dashboardId="3Yr")
 `,
       inputSchema: DashboardTool.GetDashboardToolInput.shape,
     },
-    dashboardTool.getDashboard,
+    dashboardTool.getDashboard
   );
 
   server.registerTool(
@@ -171,7 +171,7 @@ update_dashboard(
 `,
       inputSchema: DashboardTool.UpdateDashboardToolInput.shape,
     },
-    dashboardTool.updateDashboard,
+    dashboardTool.updateDashboard
   );
 
   server.registerTool(
@@ -214,7 +214,7 @@ list_hosts(limit=20, offset=20)
 `,
       inputSchema: HostTool.ListHostsToolInput.shape,
     },
-    hostTool.listHosts,
+    hostTool.listHosts
   );
 
   server.registerTool(
@@ -227,16 +227,33 @@ list_hosts(limit=20, offset=20)
 - Get metrics data for a specific host
 - Analyze host performance over time
 
+📊 AVAILABLE METRIC NAMES:
+- **Standard metrics (mackerel-agent)**: loadavg5, cpu.user, memory.used, disk.sda1.reads, network.eth0.rxBytes, etc.
+- **Custom metrics**: custom.myapp.* (user-defined metrics)
+- **AWS integration**: ec2.cpu.used, rds.database_connections.used, etc.
+- **Azure integration**: azure.virtual_machine.cpu.percent, azure.sql_database.cpu.percent, etc.
+- **GCP integration**: gce.instance.cpu.used, etc.
+
 <examples>
-### Get all metrics for a host
+### Get CPU load average for a host
 \`\`\`
 get_host_metrics(hostId="host123", name="loadavg5", from=1609459200, to=1609462800)
+\`\`\`
+
+### Get custom metric
+\`\`\`
+get_host_metrics(hostId="host123", name="custom.myapp.response_time", from=1609459200, to=1609462800)
+\`\`\`
+
+### Get AWS EC2 CPU utilization
+\`\`\`
+get_host_metrics(hostId="host123", name="ec2.cpu.used", from=1609459200, to=1609462800)
 \`\`\`
 </examples>
 `,
       inputSchema: HostMetricsTool.GetHostMetricsToolInput.shape,
     },
-    hostMetricsTool.getHostMetrics,
+    hostMetricsTool.getHostMetrics
   );
 
   server.registerTool(
@@ -258,7 +275,7 @@ list_services()
 `,
       inputSchema: ServiceTool.ListServicesToolInput.shape,
     },
-    serviceTool.listServices,
+    serviceTool.listServices
   );
 
   server.registerTool(
@@ -268,18 +285,31 @@ list_services()
       description: `Retrieve metrics data for a specific service from Mackerel.
 
 🔍 USE THIS TOOL WHEN USERS:
-- Get metrics data for a specific service
+- "Service metrics" are metrics that correspond to a service that consists of multiple hosts and their collective roles
+- The following can be visualized and monitored.
+  - The total number of registered users in a service
+  - The number of PVs for a website
+  - Business related KPIs such as sales or the number of orders received from EC sites
+
+📊 AVAILABLE METRIC NAMES:
+- **Custom metrics**: http.response_time, sales.count, analytics.page_view, etc.
+
 
 <examples>
-### Get service metrics
+### Get service response time
 \`\`\`
-get_service_metrics(serviceName="web", name="response_time", from=1609459200, to=1609462800)
+get_service_metrics(serviceName="web", name="__externalhttp.responsetime.<monitorId>", from=1609459200, to=1609462800)
 \`\`\`
-</examples>
-`,
+
+### Get service page views
+\`\`\`
+get_service_metrics(serviceName="web", name="analytics.page_view", from=1609459200, to=1609462800)
+\`\`\`
+
+</examples>`,
       inputSchema: ServiceMetricsTool.GetServiceMetricsToolInput.shape,
     },
-    serviceMetricsTool.getServiceMetrics,
+    serviceMetricsTool.getServiceMetrics
   );
 
   server.registerTool(
@@ -301,7 +331,7 @@ list_monitors()
 `,
       inputSchema: MonitorTool.ListMonitorsToolInput.shape,
     },
-    monitorTool.listMonitors,
+    monitorTool.listMonitors
   );
 
   server.registerTool(
@@ -322,7 +352,7 @@ get_monitor(monitorId="2cSZzK3XfmB")
 `,
       inputSchema: MonitorTool.GetMonitorToolInput.shape,
     },
-    monitorTool.getMonitor,
+    monitorTool.getMonitor
   );
 
   const transport = new StdioServerTransport();

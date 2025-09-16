@@ -7,11 +7,15 @@ export class HostMetricsTool {
 
   static GetHostMetricsToolInput = z.object({
     hostId: z.string().describe("Host ID"),
-    name: z.string().describe("Metric name（loadavg5, etc.)"),
+    name: z
+      .string()
+      .describe(
+        "Metric name (e.g., loadavg5, cpu.user, memory.used, custom.myapp.*, ec2.cpu.used, etc.)"
+      ),
     from: z
       .number()
       .describe(
-        "The start of the time period you want metrics for (unix time)",
+        "The start of the time period you want metrics for (unix time)"
       ),
     to: z
       .number()
@@ -26,7 +30,7 @@ export class HostMetricsTool {
   }: z.infer<typeof HostMetricsTool.GetHostMetricsToolInput>) => {
     return await buildToolResponse(
       async () =>
-        await this.mackerelClient.getHostMetrics(hostId, name, from, to),
+        await this.mackerelClient.getHostMetrics(hostId, name, from, to)
     );
   };
 }

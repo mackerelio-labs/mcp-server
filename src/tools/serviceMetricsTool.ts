@@ -7,11 +7,15 @@ export class ServiceMetricsTool {
 
   static GetServiceMetricsToolInput = z.object({
     serviceName: z.string().describe("Service name"),
-    name: z.string().describe("Metric name"),
+    name: z
+      .string()
+      .describe(
+        "Metric name (e.g., __externalhttp.responsetime.<monitorId>, sales.count, analytics.page_view, etc.)"
+      ),
     from: z
       .number()
       .describe(
-        "The start of the time period you want metrics for (unix time)",
+        "The start of the time period you want metrics for (unix time)"
       ),
     to: z
       .number()
@@ -26,12 +30,7 @@ export class ServiceMetricsTool {
   }: z.infer<typeof ServiceMetricsTool.GetServiceMetricsToolInput>) => {
     return await buildToolResponse(
       async () =>
-        await this.mackerelClient.getServiceMetrics(
-          serviceName,
-          name,
-          from,
-          to,
-        ),
+        await this.mackerelClient.getServiceMetrics(serviceName, name, from, to)
     );
   };
 }
