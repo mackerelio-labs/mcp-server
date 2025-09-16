@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { setupClient } from "../__tests__/setupClient.js";
 import { setupServer } from "../__tests__/setupServer.js";
 import { HostTool } from "./hostTool.js";
@@ -10,6 +10,10 @@ import { MACKEREL_BASE_URL } from "../__tests__/mackerelClient.js";
 describe("Host Tool", () => {
   const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
   const hostTool = new HostTool(mackerelClient);
+
+  beforeEach(() => {
+    mackerelClient.clearCache();
+  });
 
   it("listHosts", async () => {
     const hosts = [
