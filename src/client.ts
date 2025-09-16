@@ -2,13 +2,56 @@ import { z } from "zod";
 import { DashboardTool } from "./tools/dashboardTool.js";
 import { applyPagination } from "./tools/util.js";
 
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+}
+
 export class MackerelClient {
   private readonly baseUrl: string;
   private readonly apiKey: string;
+  private readonly cacheMap: Map<string, CacheEntry> = new Map();
+  private readonly cacheTTL: number;
 
-  constructor(baseUrl: string, apiKey: string) {
+  constructor(baseUrl: string, apiKey: string, cacheTTL: number = 300) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
+    this.cacheTTL = cacheTTL * 1000; // Convert seconds to milliseconds
+  }
+
+  private getCacheKey(
+    method: string,
+    path: string,
+    searchParams?: URLSearchParams,
+  ): string {
+    const paramsString = searchParams ? searchParams.toString() : "";
+    return `${method}:${path}:${paramsString}`;
+  }
+
+  private getFromCache<T>(cacheKey: string): T | null {
+    const entry = this.cacheMap.get(cacheKey);
+    if (!entry) {
+      return null;
+    }
+
+    const now = Date.now();
+    if (now - entry.timestamp > this.cacheTTL) {
+      this.cacheMap.delete(cacheKey);
+      return null;
+    }
+
+    return entry.data as T;
+  }
+
+  private setCache(cacheKey: string, data: any): void {
+    this.cacheMap.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+    });
+  }
+
+  public clearCache(): void {
+    this.cacheMap.clear();
   }
 
   private async request<T>(
@@ -22,6 +65,15 @@ export class MackerelClient {
       body?: any;
     } = {},
   ): Promise<T> {
+    // Only cache GET requests
+    if (method === "GET") {
+      const cacheKey = this.getCacheKey(method, path, searchParams);
+      const cachedResult = this.getFromCache<T>(cacheKey);
+      if (cachedResult !== null) {
+        return cachedResult;
+      }
+    }
+
     const url = `${this.baseUrl}${path}${searchParams ? "?" + searchParams.toString() : ""}`;
     const headers: HeadersInit = {
       "X-Api-Key": this.apiKey,
@@ -44,7 +96,15 @@ export class MackerelClient {
       throw new Error(`Mackerel API error: ${response.status} ${errorText}`);
     }
 
-    return (await response.json()) as Promise<T>;
+    const result = (await response.json()) as T;
+
+    // Cache GET requests only
+    if (method === "GET") {
+      const cacheKey = this.getCacheKey(method, path, searchParams);
+      this.setCache(cacheKey, result);
+    }
+
+    return result;
   }
 
   // GET /api/v0/alerts
@@ -98,8 +158,36 @@ export class MackerelClient {
   }
 
   // GET /api/v0/dashboards
-  async getDashboards(): Promise<{ dashboards: any[] }> {
-    return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
+  async getDashboards(
+    limit?: number,
+    offset?: number,
+  ): Promise<{
+    dashboards: any[];
+    pageInfo: { hasNextPage: boolean; hasPrevPage: boolean };
+  }> {
+    const response = await this.request<{ dashboards: any[] }>(
+      "GET",
+      "/api/v0/dashboards",
+    );
+
+    const effectiveLimit = limit || 20;
+    const effectiveOffset = offset || 0;
+    const totalDashboards = response.dashboards.length;
+
+    const paginatedDashboards = applyPagination(response.dashboards, {
+      limit: effectiveLimit,
+      offset: effectiveOffset,
+    });
+
+    const pageInfo = {
+      hasPrevPage: effectiveOffset > 0,
+      hasNextPage: effectiveOffset + effectiveLimit < totalDashboards,
+    };
+
+    return {
+      dashboards: paginatedDashboards,
+      pageInfo,
+    };
   }
 
   // GET /api/v0/dashboards/{dashboardId}
