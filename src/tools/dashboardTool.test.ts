@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { setupClient } from "../__tests__/setupClient.js";
 import { setupServer } from "../__tests__/setupServer.js";
 import { DashboardTool } from "./dashboardTool.js";
@@ -10,6 +10,10 @@ import { MACKEREL_BASE_URL } from "../__tests__/mackerelClient.js";
 describe("Dashboard Tool", () => {
   const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
   const dashboardTool = new DashboardTool(mackerelClient);
+
+  beforeEach(() => {
+    mackerelClient.clearCache();
+  });
 
   it("listDashboards with default summary", async () => {
     const dashboards = [
