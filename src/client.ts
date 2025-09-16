@@ -158,8 +158,36 @@ export class MackerelClient {
   }
 
   // GET /api/v0/dashboards
-  async getDashboards(): Promise<{ dashboards: any[] }> {
-    return this.request<{ dashboards: any[] }>("GET", "/api/v0/dashboards");
+  async getDashboards(
+    limit?: number,
+    offset?: number,
+  ): Promise<{
+    dashboards: any[];
+    pageInfo: { hasNextPage: boolean; hasPrevPage: boolean };
+  }> {
+    const response = await this.request<{ dashboards: any[] }>(
+      "GET",
+      "/api/v0/dashboards",
+    );
+
+    const effectiveLimit = limit || 20;
+    const effectiveOffset = offset || 0;
+    const totalDashboards = response.dashboards.length;
+
+    const paginatedDashboards = applyPagination(response.dashboards, {
+      limit: effectiveLimit,
+      offset: effectiveOffset,
+    });
+
+    const pageInfo = {
+      hasPrevPage: effectiveOffset > 0,
+      hasNextPage: effectiveOffset + effectiveLimit < totalDashboards,
+    };
+
+    return {
+      dashboards: paginatedDashboards,
+      pageInfo,
+    };
   }
 
   // GET /api/v0/dashboards/{dashboardId}
