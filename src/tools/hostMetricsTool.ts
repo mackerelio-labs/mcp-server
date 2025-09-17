@@ -7,7 +7,11 @@ export class HostMetricsTool {
 
   static GetHostMetricsToolInput = z.object({
     hostId: z.string().describe("Host ID"),
-    name: z.string().describe("Metric name（loadavg5, etc.)"),
+    name: z
+      .string()
+      .describe(
+        "Metric name (e.g., loadavg5, cpu.user, memory.used, custom.myapp.*, ec2.cpu.used, etc.)",
+      ),
     from: z
       .number()
       .describe(

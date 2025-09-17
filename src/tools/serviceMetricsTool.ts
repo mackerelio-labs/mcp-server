@@ -7,7 +7,11 @@ export class ServiceMetricsTool {
 
   static GetServiceMetricsToolInput = z.object({
     serviceName: z.string().describe("Service name"),
-    name: z.string().describe("Metric name"),
+    name: z
+      .string()
+      .describe(
+        "Metric name (e.g., __externalhttp.responsetime.<monitorId>, sales.count, analytics.page_view, etc.)",
+      ),
     from: z
       .number()
       .describe(

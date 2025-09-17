@@ -227,10 +227,27 @@ list_hosts(limit=20, offset=20)
 - Get metrics data for a specific host
 - Analyze host performance over time
 
+📊 AVAILABLE METRIC NAMES:
+- **Standard metrics (mackerel-agent)**: loadavg5, cpu.user, memory.used, disk.sda1.reads, network.eth0.rxBytes, etc.
+- **Custom metrics**: custom.myapp.* (user-defined metrics)
+- **AWS integration**: ec2.cpu.used, rds.database_connections.used, etc.
+- **Azure integration**: azure.virtual_machine.cpu.percent, azure.sql_database.cpu.percent, etc.
+- **GCP integration**: gce.instance.cpu.used, etc.
+
 <examples>
-### Get all metrics for a host
+### Get CPU load average for a host
 \`\`\`
 get_host_metrics(hostId="host123", name="loadavg5", from=1609459200, to=1609462800)
+\`\`\`
+
+### Get custom metric
+\`\`\`
+get_host_metrics(hostId="host123", name="custom.myapp.response_time", from=1609459200, to=1609462800)
+\`\`\`
+
+### Get AWS EC2 CPU utilization
+\`\`\`
+get_host_metrics(hostId="host123", name="ec2.cpu.used", from=1609459200, to=1609462800)
 \`\`\`
 </examples>
 `,
@@ -268,15 +285,28 @@ list_services()
       description: `Retrieve metrics data for a specific service from Mackerel.
 
 🔍 USE THIS TOOL WHEN USERS:
-- Get metrics data for a specific service
+- "Service metrics" are metrics that correspond to a service that consists of multiple hosts and their collective roles
+- The following can be visualized and monitored.
+  - The total number of registered users in a service
+  - The number of PVs for a website
+  - Business related KPIs such as sales or the number of orders received from EC sites
+
+📊 AVAILABLE METRIC NAMES:
+- **Custom metrics**: http.response_time, sales.count, analytics.page_view, etc.
+
 
 <examples>
-### Get service metrics
+### Get service response time
 \`\`\`
-get_service_metrics(serviceName="web", name="response_time", from=1609459200, to=1609462800)
+get_service_metrics(serviceName="web", name="__externalhttp.responsetime.<monitorId>", from=1609459200, to=1609462800)
 \`\`\`
-</examples>
-`,
+
+### Get service page views
+\`\`\`
+get_service_metrics(serviceName="web", name="analytics.page_view", from=1609459200, to=1609462800)
+\`\`\`
+
+</examples>`,
       inputSchema: ServiceMetricsTool.GetServiceMetricsToolInput.shape,
     },
     serviceMetricsTool.getServiceMetrics,
