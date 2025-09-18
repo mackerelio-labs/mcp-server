@@ -20,6 +20,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install latest npm
+        run: |
+          echo "Current npm version: $(npm -v)"
+          npm install -g npm@latest
+          echo "Updated npm version: $(npm -v)"
+
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
