@@ -16,6 +16,24 @@
 - implement token limit handling in buildToolResponse by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/32
 - Added descriptions of metric names by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/34
 - Bump vite from 7.1.2 to 7.1.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/26
+- Release for v0.1.0 by @mackerelio-labs-bot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/25
+
+## [v0.1.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.0.1...v0.1.0) - 2025-09-18
+- MACKEREL_API_KEY -> MACKEREL_APIKEY by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/20
+- Enable working npx by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/22
+- add GitHub Actions workflow for package publishing by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/21
+- chore: setup tagpr for release by @Arthur1 in https://github.com/mackerelio-labs/mcp-server/pull/23
+- Push to GHCR on release by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/24
+- update GitHub Actions to use specific versions by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/27
+- Apply pagination for list hosts by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/28
+- implement caching for GET requests in MackerelClient by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/29
+- add beforeEach hook to clear cache in Host Tool tests by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/33
+- add .prettierrc by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/35
+- implement pagination and summary options for listDashboards API by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/30
+- Enhanced 404 Error Handling for Metrics Tools by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/31
+- implement token limit handling in buildToolResponse by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/32
+- Added descriptions of metric names by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/34
+- Bump vite from 7.1.2 to 7.1.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/26
 
 ## [v0.0.1](https://github.com/mackerelio-labs/mcp-server/commits/v0.0.1) - 2025-08-22
 - Enable working with `node build/index.js` by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/1
