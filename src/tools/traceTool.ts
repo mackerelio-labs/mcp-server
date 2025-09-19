@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { MackerelClient } from "../client.js";
-import { buildToolResponse } from "./util.js";
+import {
+  buildToolResponse,
+  applyPagination,
+  PaginationOptions,
+} from "./util.js";
 
 interface TraceSpan {
   traceId: string;
@@ -166,33 +170,24 @@ export class TraceTool {
     return filtered;
   }
 
-  private applyPagination(
-    spans: OptimizedSpan[],
+  private createPageInfo(
+    totalItems: number,
     limit: number,
     offset: number,
   ): {
-    paginatedSpans: OptimizedSpan[];
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPrevPage: boolean;
-      currentPage: number;
-      totalPages: number;
-    };
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    currentPage: number;
+    totalPages: number;
   } {
-    const totalSpans = spans.length;
     const currentPage = Math.floor(offset / limit) + 1;
-    const totalPages = Math.ceil(totalSpans / limit);
-
-    const paginatedSpans = spans.slice(offset, offset + limit);
+    const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      paginatedSpans,
-      pageInfo: {
-        hasNextPage: offset + limit < totalSpans,
-        hasPrevPage: offset > 0,
-        currentPage,
-        totalPages,
-      },
+      hasNextPage: offset + limit < totalItems,
+      hasPrevPage: offset > 0,
+      currentPage,
+      totalPages,
     };
   }
 
@@ -218,16 +213,15 @@ export class TraceTool {
         errorSpansOnly,
       );
 
-      const { paginatedSpans, pageInfo } = this.applyPagination(
-        filteredSpans,
-        limit,
-        offset,
-      );
+      const paginatedSpans = applyPagination(filteredSpans, { limit, offset });
+      const pageInfo = this.createPageInfo(filteredSpans.length, limit, offset);
 
       const totalSpans = response.spans.length;
       const filteredTotalSpans = filteredSpans.length;
       const returnedSpans = paginatedSpans.length;
-      const hasErrors = paginatedSpans.some((span) => span.hasError);
+      const hasErrors = paginatedSpans.some(
+        (span: OptimizedSpan) => span.hasError,
+      );
 
       let traceStartTime = 0;
       let traceEndTime = 0;
