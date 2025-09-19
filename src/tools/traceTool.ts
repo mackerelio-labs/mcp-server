@@ -61,15 +61,23 @@ export class TraceTool {
       .describe(
         "Whether to include span events. Default is true as events contain important error information",
       ),
-    maxSpans: z
+    limit: z
       .number()
-      .min(1)
-      .max(1000)
+      .int()
+      .positive()
+      .max(100)
       .optional()
-      .default(100)
+      .default(20)
       .describe(
-        "Maximum number of spans to return. Default is 100 to manage response size",
+        "Maximum number of spans to return per page (default: 20, max: 100)",
       ),
+    offset: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .default(0)
+      .describe("Number of spans to skip (default: 0)"),
     filterByDuration: z
       .number()
       .min(0)
@@ -134,9 +142,8 @@ export class TraceTool {
     return false;
   }
 
-  private filterSpans(
+  private filterAndSortSpans(
     spans: OptimizedSpan[],
-    maxSpans: number,
     filterByDuration?: number,
     errorSpansOnly?: boolean,
   ): OptimizedSpan[] {
@@ -156,14 +163,45 @@ export class TraceTool {
       return b.duration - a.duration;
     });
 
-    return filtered.slice(0, maxSpans);
+    return filtered;
+  }
+
+  private applyPagination(
+    spans: OptimizedSpan[],
+    limit: number,
+    offset: number,
+  ): {
+    paginatedSpans: OptimizedSpan[];
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+      currentPage: number;
+      totalPages: number;
+    };
+  } {
+    const totalSpans = spans.length;
+    const currentPage = Math.floor(offset / limit) + 1;
+    const totalPages = Math.ceil(totalSpans / limit);
+
+    const paginatedSpans = spans.slice(offset, offset + limit);
+
+    return {
+      paginatedSpans,
+      pageInfo: {
+        hasNextPage: offset + limit < totalSpans,
+        hasPrevPage: offset > 0,
+        currentPage,
+        totalPages,
+      },
+    };
   }
 
   getTrace = async ({
     traceId,
     includeAttributes = false,
     includeEvents = true,
-    maxSpans = 100,
+    limit = 20,
+    offset = 0,
     filterByDuration,
     errorSpansOnly = false,
   }: z.infer<typeof TraceTool.GetTraceToolInput>) => {
@@ -174,37 +212,52 @@ export class TraceTool {
         this.optimizeSpan(span, includeAttributes, includeEvents),
       );
 
-      const filteredSpans = this.filterSpans(
+      const filteredSpans = this.filterAndSortSpans(
         optimizedSpans,
-        maxSpans,
         filterByDuration,
         errorSpansOnly,
       );
 
-      const totalSpans = response.spans.length;
-      const returnedSpans = filteredSpans.length;
-      const hasErrors = filteredSpans.some((span) => span.hasError);
+      const { paginatedSpans, pageInfo } = this.applyPagination(
+        filteredSpans,
+        limit,
+        offset,
+      );
 
-      const traceStartTime = Math.min(...filteredSpans.map((s) => s.startTime));
-      const traceEndTime = Math.max(...filteredSpans.map((s) => s.endTime));
-      const totalDuration = traceEndTime - traceStartTime;
+      const totalSpans = response.spans.length;
+      const filteredTotalSpans = filteredSpans.length;
+      const returnedSpans = paginatedSpans.length;
+      const hasErrors = paginatedSpans.some((span) => span.hasError);
+
+      let traceStartTime = 0;
+      let traceEndTime = 0;
+      let totalDuration = 0;
+
+      if (paginatedSpans.length > 0) {
+        traceStartTime = Math.min(...paginatedSpans.map((s) => s.startTime));
+        traceEndTime = Math.max(...paginatedSpans.map((s) => s.endTime));
+        totalDuration = traceEndTime - traceStartTime;
+      }
 
       return {
         traceId,
         summary: {
           totalSpans,
+          filteredTotalSpans,
           returnedSpans,
           hasErrors,
           totalDuration,
+          pageInfo,
           filters: {
             includeAttributes,
             includeEvents,
-            maxSpans,
+            limit,
+            offset,
             filterByDuration,
             errorSpansOnly,
           },
         },
-        spans: filteredSpans,
+        spans: paginatedSpans,
       };
     });
   };

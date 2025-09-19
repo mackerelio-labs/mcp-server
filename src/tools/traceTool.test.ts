@@ -101,8 +101,13 @@ describe("Trace Tool", () => {
 
     expect(responseData.traceId).toBe("trace123");
     expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.filteredTotalSpans).toBe(3);
     expect(responseData.summary.returnedSpans).toBe(3);
     expect(responseData.summary.hasErrors).toBe(true);
+    expect(responseData.summary.pageInfo.totalPages).toBe(1);
+    expect(responseData.summary.pageInfo.currentPage).toBe(1);
+    expect(responseData.summary.pageInfo.hasNextPage).toBe(false);
+    expect(responseData.summary.pageInfo.hasPrevPage).toBe(false);
     expect(responseData.spans).toHaveLength(3);
 
     // Check optimization: should include events but not attributes by default
@@ -140,7 +145,8 @@ describe("Trace Tool", () => {
     const responseData = JSON.parse(result.content[0].text as string);
 
     expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(2); // Only spans with duration >= 400ms
+    expect(responseData.summary.filteredTotalSpans).toBe(2); // Only spans with duration >= 400ms
+    expect(responseData.summary.returnedSpans).toBe(2);
     expect(responseData.spans).toHaveLength(2);
 
     // Should include the 500ms and 600ms spans, but not the 30ms cache span
@@ -175,7 +181,8 @@ describe("Trace Tool", () => {
     const responseData = JSON.parse(result.content[0].text as string);
 
     expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(1); // Only the error span
+    expect(responseData.summary.filteredTotalSpans).toBe(1); // Only the error span after filtering
+    expect(responseData.summary.returnedSpans).toBe(1);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.spans[0].spanId).toBe("span2");
     expect(responseData.spans[0].hasError).toBe(true);
@@ -241,7 +248,7 @@ describe("Trace Tool", () => {
     });
   });
 
-  it("should respect maxSpans limit", async () => {
+  it("should respect pagination limit", async () => {
     mswServer.use(
       http.get(MACKEREL_BASE_URL + "/api/v0/traces/trace123", () => {
         return HttpResponse.json(mockTraceData);
@@ -259,19 +266,140 @@ describe("Trace Tool", () => {
       name: "get_trace",
       arguments: {
         traceId: "trace123",
-        maxSpans: 2,
+        limit: 2,
       },
     });
 
     const responseData = JSON.parse(result.content[0].text as string);
 
     expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.filteredTotalSpans).toBe(3);
     expect(responseData.summary.returnedSpans).toBe(2);
     expect(responseData.spans).toHaveLength(2);
+    expect(responseData.summary.pageInfo.totalPages).toBe(2);
+    expect(responseData.summary.pageInfo.currentPage).toBe(1);
+    expect(responseData.summary.pageInfo.hasNextPage).toBe(true);
+    expect(responseData.summary.pageInfo.hasPrevPage).toBe(false);
 
     // Should prioritize error spans and then longest duration
     expect(responseData.spans[0].hasError).toBe(true); // Error span first
     expect(responseData.spans[0].spanId).toBe("span2");
+  });
+
+  it("should support pagination with offset", async () => {
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/traces/trace123", () => {
+        return HttpResponse.json(mockTraceData);
+      }),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    // Get second page (offset=1, limit=1)
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "trace123",
+        limit: 1,
+        offset: 1,
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.filteredTotalSpans).toBe(3);
+    expect(responseData.summary.returnedSpans).toBe(1);
+    expect(responseData.spans).toHaveLength(1);
+    expect(responseData.summary.pageInfo.totalPages).toBe(3);
+    expect(responseData.summary.pageInfo.currentPage).toBe(2);
+    expect(responseData.summary.pageInfo.hasNextPage).toBe(true);
+    expect(responseData.summary.pageInfo.hasPrevPage).toBe(true);
+
+    // Should get the second span in sorted order (span1 - 500ms duration)
+    expect(responseData.spans[0].spanId).toBe("span1");
+  });
+
+  it("should handle pagination beyond available spans", async () => {
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/traces/trace123", () => {
+        return HttpResponse.json(mockTraceData);
+      }),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    // Try to get page beyond available data
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "trace123",
+        limit: 10,
+        offset: 100,
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.filteredTotalSpans).toBe(3);
+    expect(responseData.summary.returnedSpans).toBe(0);
+    expect(responseData.spans).toHaveLength(0);
+    expect(responseData.summary.pageInfo.totalPages).toBe(1);
+    expect(responseData.summary.pageInfo.currentPage).toBe(11);
+    expect(responseData.summary.pageInfo.hasNextPage).toBe(false);
+    expect(responseData.summary.pageInfo.hasPrevPage).toBe(true);
+  });
+
+  it("should combine filtering and pagination correctly", async () => {
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/traces/trace123", () => {
+        return HttpResponse.json(mockTraceData);
+      }),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    // Filter by duration >= 400ms and paginate
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "trace123",
+        filterByDuration: 400,
+        limit: 1,
+        offset: 0,
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.filteredTotalSpans).toBe(2); // 2 spans with duration >= 400ms
+    expect(responseData.summary.returnedSpans).toBe(1);
+    expect(responseData.spans).toHaveLength(1);
+    expect(responseData.summary.pageInfo.totalPages).toBe(2);
+    expect(responseData.summary.pageInfo.currentPage).toBe(1);
+    expect(responseData.summary.pageInfo.hasNextPage).toBe(true);
+    expect(responseData.summary.pageInfo.hasPrevPage).toBe(false);
+
+    // Should get the error span first (span2 - 600ms duration)
+    expect(responseData.spans[0].spanId).toBe("span2");
+    expect(responseData.spans[0].hasError).toBe(true);
   });
 
   it("should handle 404 error", async () => {

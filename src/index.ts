@@ -372,11 +372,12 @@ get_monitor(monitorId="2cSZzK3XfmB")
 
 ## Key Features:
 - **Smart filtering**: Automatically prioritizes error spans and high-latency operations
-- **Response optimization**: Reduces data size to fit within token limits while preserving critical information
+- **Pagination support**: Navigate through large traces with limit/offset parameters
+- **Response optimization**: Reduces data size while preserving critical information
 - **Interactive drill-down**: Support for progressive analysis with multiple queries
 
 <examples>
-### Basic trace retrieval (optimized for analysis)
+### Basic trace retrieval (first page)
 \`\`\`
 get_trace(traceId="abc123def456")
 \`\`\`
@@ -393,12 +394,23 @@ get_trace(traceId="abc123def456", filterByDuration=100)
 
 ### Detailed analysis with attributes
 \`\`\`
-get_trace(traceId="abc123def456", includeAttributes=true, maxSpans=50)
+get_trace(traceId="abc123def456", includeAttributes=true, limit=50)
 \`\`\`
 
 ### Minimal view for overview
 \`\`\`
-get_trace(traceId="abc123def456", includeEvents=false, maxSpans=20)
+get_trace(traceId="abc123def456", includeEvents=false, limit=10)
+\`\`\`
+
+### Pagination through large traces
+\`\`\`
+get_trace(traceId="abc123def456", limit=20, offset=0)  # First page
+get_trace(traceId="abc123def456", limit=20, offset=20) # Second page
+\`\`\`
+
+### Combined filtering and pagination
+\`\`\`
+get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
 \`\`\`
 </examples>
 
