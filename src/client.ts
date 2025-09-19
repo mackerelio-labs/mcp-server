@@ -330,4 +330,9 @@ export class MackerelClient {
       `/api/v0/monitors/${monitorId}`,
     );
   }
+
+  // GET /api/v0/traces/{traceId}
+  async getTrace(traceId: string): Promise<{ spans: any[] }> {
+    return this.request<{ spans: any[] }>("GET", `/api/v0/traces/${traceId}`);
+  }
 }

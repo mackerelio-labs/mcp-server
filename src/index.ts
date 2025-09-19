@@ -5,6 +5,7 @@ import { DashboardTool } from "./tools/dashboardTool.js";
 import { MonitorTool } from "./tools/monitorTool.js";
 import { HostTool } from "./tools/hostTool.js";
 import { ServiceTool } from "./tools/serviceTool.js";
+import { TraceTool } from "./tools/traceTool.js";
 import { MackerelClient } from "./client.js";
 import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
 import { HostMetricsTool } from "./tools/hostMetricsTool.js";
@@ -20,6 +21,7 @@ async function main() {
   const hostMetricsTool = new HostMetricsTool(mackerelClient);
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
+  const traceTool = new TraceTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -353,6 +355,62 @@ get_monitor(monitorId="2cSZzK3XfmB")
       inputSchema: MonitorTool.GetMonitorToolInput.shape,
     },
     monitorTool.getMonitor,
+  );
+
+  server.registerTool(
+    "get_trace",
+    {
+      title: "Get Trace",
+      description: `Retrieve trace data by trace ID from Mackerel for distributed tracing analysis.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Analyze performance bottlenecks in distributed systems
+- Investigate error propagation across microservices
+- Understand request flow and service dependencies
+- Debug latency issues and identify slow operations
+- Generate documentation of system architecture from trace data
+
+## Key Features:
+- **Smart filtering**: Automatically prioritizes error spans and high-latency operations
+- **Response optimization**: Reduces data size to fit within token limits while preserving critical information
+- **Interactive drill-down**: Support for progressive analysis with multiple queries
+
+<examples>
+### Basic trace retrieval (optimized for analysis)
+\`\`\`
+get_trace(traceId="abc123def456")
+\`\`\`
+
+### Focus on errors only
+\`\`\`
+get_trace(traceId="abc123def456", errorSpansOnly=true)
+\`\`\`
+
+### Identify bottlenecks (spans > 100ms)
+\`\`\`
+get_trace(traceId="abc123def456", filterByDuration=100)
+\`\`\`
+
+### Detailed analysis with attributes
+\`\`\`
+get_trace(traceId="abc123def456", includeAttributes=true, maxSpans=50)
+\`\`\`
+
+### Minimal view for overview
+\`\`\`
+get_trace(traceId="abc123def456", includeEvents=false, maxSpans=20)
+\`\`\`
+</examples>
+
+## Use Cases:
+- **Error Analysis**: Quickly identify which service caused an error and how it propagated
+- **Performance Investigation**: Find the slowest operations in a transaction
+- **Service Dependencies**: Understand how services interact in complex workflows
+- **Documentation**: Generate dynamic documentation of system architecture
+`,
+      inputSchema: TraceTool.GetTraceToolInput.shape,
+    },
+    traceTool.getTrace,
   );
 
   const transport = new StdioServerTransport();
