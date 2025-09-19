@@ -127,7 +127,7 @@ export class TraceTool {
   }
 
   private hasSpanError(span: TraceSpan): boolean {
-    if (span.status && span.status.code !== "OK") {
+    if (span.status && span.status.code === "ERROR (2)") {
       return true;
     }
 

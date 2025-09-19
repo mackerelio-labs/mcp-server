@@ -55,7 +55,7 @@ describe("Trace Tool", () => {
             },
           },
         ],
-        status: { code: "ERROR", message: "Database connection failed" },
+        status: { code: "ERROR (2)", message: "Database connection failed" },
         resource: { service: "database-service" },
         scope: { name: "db-tracer" },
       },
