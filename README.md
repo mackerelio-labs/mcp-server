@@ -62,3 +62,4 @@ The MCP server can be run either via Docker or npx.
 * `get_service_metrics` - Retrieve metrics data for a specific service.
 * `list_monitors` - Retrieve monitor configurations.
 * `get_monitor` - Retrieve a specific monitor configuration.
+* `get_trace` - Retrieve trace data by trace ID for distributed tracing analysis.
