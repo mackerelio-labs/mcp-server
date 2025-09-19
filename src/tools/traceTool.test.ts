@@ -100,9 +100,6 @@ describe("Trace Tool", () => {
     const responseData = JSON.parse(result.content[0].text as string);
 
     expect(responseData.traceId).toBe("trace123");
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(3);
     expect(responseData.summary.hasErrors).toBe(true);
     expect(responseData.summary.pageInfo.totalPages).toBe(1);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);
@@ -144,9 +141,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(2); // Only spans with duration >= 400ms
-    expect(responseData.summary.returnedSpans).toBe(2);
     expect(responseData.spans).toHaveLength(2);
 
     // Should include the 500ms and 600ms spans, but not the 30ms cache span
@@ -180,9 +174,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(1); // Only the error span after filtering
-    expect(responseData.summary.returnedSpans).toBe(1);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.spans[0].spanId).toBe("span2");
     expect(responseData.spans[0].hasError).toBe(true);
@@ -272,9 +263,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(2);
     expect(responseData.spans).toHaveLength(2);
     expect(responseData.summary.pageInfo.totalPages).toBe(2);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);
@@ -312,9 +300,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(1);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.summary.pageInfo.totalPages).toBe(3);
     expect(responseData.summary.pageInfo.currentPage).toBe(2);
@@ -351,9 +336,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(3);
-    expect(responseData.summary.returnedSpans).toBe(0);
     expect(responseData.spans).toHaveLength(0);
     expect(responseData.summary.pageInfo.totalPages).toBe(1);
     expect(responseData.summary.pageInfo.currentPage).toBe(11);
@@ -388,9 +370,6 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
-    expect(responseData.summary.filteredTotalSpans).toBe(2); // 2 spans with duration >= 400ms
-    expect(responseData.summary.returnedSpans).toBe(1);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.summary.pageInfo.totalPages).toBe(2);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);

@@ -216,9 +216,6 @@ export class TraceTool {
       const paginatedSpans = applyPagination(filteredSpans, { limit, offset });
       const pageInfo = this.createPageInfo(filteredSpans.length, limit, offset);
 
-      const totalSpans = response.spans.length;
-      const filteredTotalSpans = filteredSpans.length;
-      const returnedSpans = paginatedSpans.length;
       const hasErrors = paginatedSpans.some(
         (span: OptimizedSpan) => span.hasError,
       );
@@ -236,20 +233,9 @@ export class TraceTool {
       return {
         traceId,
         summary: {
-          totalSpans,
-          filteredTotalSpans,
-          returnedSpans,
           hasErrors,
           totalDuration,
           pageInfo,
-          filters: {
-            includeAttributes,
-            includeEvents,
-            limit,
-            offset,
-            filterByDuration,
-            errorSpansOnly,
-          },
         },
         spans: paginatedSpans,
       };
