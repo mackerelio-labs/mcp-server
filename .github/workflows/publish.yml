@@ -1,15 +1,15 @@
 name: Publish Package
 
 on:
-  # push:
-  #   tags:
-  #     - 'v*'
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
 
-# permissions:
-#   id-token: write  # Required for OIDC
-#   contents: read
-#   packages: write
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+  packages: write
 
 jobs:
   publish-npm:
@@ -27,38 +27,38 @@ jobs:
           npm install -g npm@latest
           echo "Updated npm version: $(npm -v)"
 
-  #     - run: npm ci
-  #     - run: npm run build --if-present
-  #     - run: npm test
-  #     - run: npm publish
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npm publish
 
-  # publish-docker:
-  #   needs: publish-npm
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
-  #     - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+  publish-docker:
+    needs: publish-npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
-  #     - name: Login to GHCR
-  #       uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GHCR
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Get version
-  #       id: get_version
-  #       run: |
-  #         VERSION=$(npm pkg get version | tr -d '"')
-  #         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-  #     - name: Build and push Docker image
-  #       uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
-  #       with:
-  #         context: .
-  #         platforms: |
-  #           linux/amd64
-  #           linux/arm64
-  #         push: true
-  #         tags: |
-  #           ghcr.io/${{ github.repository_owner }}/mcp-server:latest
-  #           ghcr.io/${{ github.repository_owner }}/mcp-server:${{ steps.get_version.outputs.version }}
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(npm pkg get version | tr -d '"')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Build and push Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          platforms: |
+            linux/amd64
+            linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mcp-server:latest
+            ghcr.io/${{ github.repository_owner }}/mcp-server:${{ steps.get_version.outputs.version }}
