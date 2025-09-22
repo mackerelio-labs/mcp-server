@@ -19,7 +19,7 @@ The MCP server can be run either via Docker or npx.
         "-i",
         "-e",
         "MACKEREL_APIKEY",
-        "-----TBD_IMAGE_NAME"
+        "ghcr.io/mackerelio-labs/mcp-server:latest"
       ],
       "env": {
         "MACKEREL_APIKEY": "${MACKEREL_APIKEY}"
@@ -38,7 +38,7 @@ The MCP server can be run either via Docker or npx.
       "command": "npx",
       "args": [
         "-y",
-        "-----TBD_PACKAGE_NAME"
+        "@mackerel/mcp-server"
       ],
       "env": {
         "MACKEREL_APIKEY": "${MACKEREL_APIKEY}"

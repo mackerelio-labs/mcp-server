@@ -25,6 +25,10 @@
     "LICENSE"
   ],
   "types": "build/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mackerelio-labs/mcp-server.git"
+  },
   "bugs": {
     "url": "https://github.com/mackerelio-labs/mcp-server/issues"
   },
