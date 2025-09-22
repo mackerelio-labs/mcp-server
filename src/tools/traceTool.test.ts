@@ -55,7 +55,7 @@ describe("Trace Tool", () => {
             },
           },
         ],
-        status: { code: "ERROR (2)", message: "Database connection failed" },
+        status: { code: "2", message: "Database connection failed" },
         resource: { service: "database-service" },
         scope: { name: "db-tracer" },
       },
@@ -72,6 +72,30 @@ describe("Trace Tool", () => {
         status: { code: "OK" },
         resource: { service: "cache-service" },
         scope: { name: "cache-tracer" },
+      },
+      {
+        traceId: "trace123",
+        spanId: "span4",
+        name: "API call with error status",
+        startTime: 1600000000900,
+        endTime: 1600000001000,
+        attributes: {
+          "http.method": "POST",
+          "http.status_code": 500,
+        },
+        events: [
+          {
+            name: "error.occurred",
+            timestamp: 1600000000950,
+            attributes: {
+              "error.type": "InternalServerError",
+              "error.message": "Server error occurred",
+            },
+          },
+        ],
+        status: { code: "2", message: "Internal server error" },
+        resource: { service: "api-service" },
+        scope: { name: "api-tracer" },
       },
     ],
   };
@@ -100,13 +124,13 @@ describe("Trace Tool", () => {
     const responseData = JSON.parse(result.content[0].text as string);
 
     expect(responseData.traceId).toBe("trace123");
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.summary.hasErrors).toBe(true);
     expect(responseData.summary.pageInfo.totalPages).toBe(1);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);
     expect(responseData.summary.pageInfo.hasNextPage).toBe(false);
     expect(responseData.summary.pageInfo.hasPrevPage).toBe(false);
-    expect(responseData.spans).toHaveLength(3);
+    expect(responseData.spans).toHaveLength(4);
 
     // Check optimization: should include events but not attributes by default
     const spanWithEvents = responseData.spans.find(
@@ -142,14 +166,15 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(2);
 
-    // Should include the 500ms and 600ms spans, but not the 30ms cache span
+    // Should include the 500ms and 600ms spans, but not the 30ms cache span or 100ms API span
     const spanIds = responseData.spans.map((s: any) => s.spanId);
     expect(spanIds).toContain("span1");
     expect(spanIds).toContain("span2");
     expect(spanIds).not.toContain("span3");
+    expect(spanIds).not.toContain("span4");
   });
 
   it("should return only error spans when errorSpansOnly is true", async () => {
@@ -176,7 +201,7 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.spans[0].spanId).toBe("span2");
     expect(responseData.spans[0].hasError).toBe(true);
@@ -266,7 +291,7 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(2);
     expect(responseData.summary.pageInfo.totalPages).toBe(2);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);
@@ -304,9 +329,9 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(1);
-    expect(responseData.summary.pageInfo.totalPages).toBe(3);
+    expect(responseData.summary.pageInfo.totalPages).toBe(4);
     expect(responseData.summary.pageInfo.currentPage).toBe(2);
     expect(responseData.summary.pageInfo.hasNextPage).toBe(true);
     expect(responseData.summary.pageInfo.hasPrevPage).toBe(true);
@@ -341,7 +366,7 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(0);
     expect(responseData.summary.pageInfo.totalPages).toBe(1);
     expect(responseData.summary.pageInfo.currentPage).toBe(11);
@@ -376,7 +401,7 @@ describe("Trace Tool", () => {
 
     const responseData = JSON.parse(result.content[0].text as string);
 
-    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.summary.totalSpans).toBe(4);
     expect(responseData.spans).toHaveLength(1);
     expect(responseData.summary.pageInfo.totalPages).toBe(2);
     expect(responseData.summary.pageInfo.currentPage).toBe(1);

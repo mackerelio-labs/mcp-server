@@ -131,15 +131,9 @@ export class TraceTool {
   }
 
   private hasSpanError(span: TraceSpan): boolean {
-    if (span.status && span.status.code === "ERROR (2)") {
-      return true;
-    }
-
     if (span.events) {
-      return span.events.some(
-        (event) =>
-          event.name.toLowerCase().includes("error") ||
-          event.name.toLowerCase().includes("exception"),
+      return span.events.some((event) =>
+        event.name.toLowerCase().includes("exception"),
       );
     }
 
