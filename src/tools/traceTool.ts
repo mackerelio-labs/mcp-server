@@ -223,11 +223,11 @@ export class TraceTool {
 
       let totalDuration = 0;
 
-      if (filteredSpans.length > 0) {
+      if (optimizedSpans.length > 0) {
         const traceStartTime = Math.min(
-          ...filteredSpans.map((s) => s.startTime),
+          ...optimizedSpans.map((s) => s.startTime),
         );
-        const traceEndTime = Math.max(...filteredSpans.map((s) => s.endTime));
+        const traceEndTime = Math.max(...optimizedSpans.map((s) => s.endTime));
         totalDuration = traceEndTime - traceStartTime;
       }
 
