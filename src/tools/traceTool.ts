@@ -159,6 +159,8 @@ export class TraceTool {
       filtered = filtered.filter((span) => span.duration >= duration);
     }
 
+    // Sort spans by priority: error spans first, then by duration (longest first)
+    // This ensures critical issues (errors) and performance bottlenecks (slow spans) are surfaced at the top
     filtered.sort((a, b) => {
       if (a.hasError && !b.hasError) return -1;
       if (!a.hasError && b.hasError) return 1;
