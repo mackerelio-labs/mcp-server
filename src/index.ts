@@ -381,7 +381,7 @@ get_trace(traceId="abc123def456")
 get_trace(traceId="abc123def456", errorSpansOnly=true)
 \`\`\`
 
-### Identify bottlenecks (spans > 100ms)
+### Filter spans with duration over 100ms
 \`\`\`
 get_trace(traceId="abc123def456", duration=100)
 \`\`\`
