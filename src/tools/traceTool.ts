@@ -119,7 +119,7 @@ export class TraceTool {
       optimized.attributes = span.attributes;
     }
 
-    if (includeEvents && span.events && span.events.length > 0) {
+    if (includeEvents) {
       optimized.events = span.events;
     }
 
