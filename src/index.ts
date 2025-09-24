@@ -407,12 +407,6 @@ get_trace(traceId="abc123def456", limit=20, offset=20) # Second page
 get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
 \`\`\`
 </examples>
-
-## Use Cases:
-- **Error Analysis**: Quickly identify which service caused an error and how it propagated
-- **Performance Investigation**: Find the slowest operations in a transaction
-- **Service Dependencies**: Understand how services interact in complex workflows
-- **Documentation**: Generate dynamic documentation of system architecture
 `,
       inputSchema: TraceTool.GetTraceToolInput.shape,
     },
