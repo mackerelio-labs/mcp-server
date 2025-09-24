@@ -160,7 +160,7 @@ describe("Trace Tool", () => {
       name: "get_trace",
       arguments: {
         traceId: "trace123",
-        filterByDuration: 400,
+        duration: 400,
       },
     });
 
@@ -393,7 +393,7 @@ describe("Trace Tool", () => {
       name: "get_trace",
       arguments: {
         traceId: "trace123",
-        filterByDuration: 400,
+        duration: 400,
         limit: 1,
         offset: 0,
       },

@@ -82,7 +82,7 @@ export class TraceTool {
       .optional()
       .default(0)
       .describe("Number of spans to skip (default: 0)"),
-    filterByDuration: z
+    duration: z
       .number()
       .min(0)
       .optional()
@@ -142,7 +142,7 @@ export class TraceTool {
 
   private filterAndSortSpans(
     spans: OptimizedSpan[],
-    filterByDuration?: number,
+    duration?: number,
     errorSpansOnly?: boolean,
   ): OptimizedSpan[] {
     let filtered = spans;
@@ -151,8 +151,8 @@ export class TraceTool {
       filtered = filtered.filter((span) => span.hasError);
     }
 
-    if (filterByDuration !== undefined) {
-      filtered = filtered.filter((span) => span.duration >= filterByDuration);
+    if (duration !== undefined) {
+      filtered = filtered.filter((span) => span.duration >= duration);
     }
 
     filtered.sort((a, b) => {
@@ -191,7 +191,7 @@ export class TraceTool {
     includeEvents = true,
     limit = 20,
     offset = 0,
-    filterByDuration,
+    duration,
     errorSpansOnly = false,
   }: z.infer<typeof TraceTool.GetTraceToolInput>) => {
     return await buildToolResponse(async () => {
@@ -203,7 +203,7 @@ export class TraceTool {
 
       const filteredSpans = this.filterAndSortSpans(
         optimizedSpans,
-        filterByDuration,
+        duration,
         errorSpansOnly,
       );
 
