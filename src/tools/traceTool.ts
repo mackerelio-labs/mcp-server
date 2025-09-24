@@ -115,7 +115,7 @@ export class TraceTool {
       hasError,
     };
 
-    if (includeAttributes && span.attributes) {
+    if (includeAttributes) {
       optimized.attributes = span.attributes;
     }
 
