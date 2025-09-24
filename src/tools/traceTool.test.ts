@@ -413,6 +413,216 @@ describe("Trace Tool", () => {
     expect(responseData.spans[0].hasError).toBe(true);
   });
 
+  it("should detect error spans with status.code === 'error'", async () => {
+    const mockTraceDataWithErrorStatus = {
+      spans: [
+        {
+          traceId: "traceError1",
+          spanId: "span1",
+          name: "HTTP GET /api/users",
+          startTime: 1600000000000,
+          endTime: 1600000000500,
+          attributes: {
+            "http.method": "GET",
+            "http.url": "/api/users",
+            "http.status_code": 500,
+          },
+          events: [],
+          status: { code: "error", message: "Request failed" },
+          resource: { service: "user-service" },
+          scope: { name: "http-tracer" },
+        },
+        {
+          traceId: "traceError1",
+          spanId: "span2",
+          name: "Successful operation",
+          startTime: 1600000000600,
+          endTime: 1600000000700,
+          attributes: {},
+          events: [],
+          status: { code: "OK" },
+          resource: { service: "other-service" },
+          scope: { name: "other-tracer" },
+        },
+      ],
+    };
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/traces/traceError1", () => {
+        return HttpResponse.json(mockTraceDataWithErrorStatus);
+      }),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "traceError1",
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.hasErrors).toBe(true);
+    expect(responseData.spans).toHaveLength(2);
+
+    const errorSpan = responseData.spans.find((s: any) => s.spanId === "span1");
+    const okSpan = responseData.spans.find((s: any) => s.spanId === "span2");
+
+    expect(errorSpan.hasError).toBe(true);
+    expect(okSpan.hasError).toBe(false);
+  });
+
+  it("should filter spans with status.code === 'error' when errorSpansOnly is true", async () => {
+    const mockTraceDataWithErrorStatus = {
+      spans: [
+        {
+          traceId: "traceError2",
+          spanId: "span1",
+          name: "HTTP GET /api/users",
+          startTime: 1600000000000,
+          endTime: 1600000000500,
+          attributes: {
+            "http.method": "GET",
+            "http.url": "/api/users",
+            "http.status_code": 500,
+          },
+          events: [],
+          status: { code: "error", message: "Request failed" },
+          resource: { service: "user-service" },
+          scope: { name: "http-tracer" },
+        },
+        {
+          traceId: "traceError2",
+          spanId: "span2",
+          name: "Successful operation",
+          startTime: 1600000000600,
+          endTime: 1600000000700,
+          attributes: {},
+          events: [],
+          status: { code: "OK" },
+          resource: { service: "other-service" },
+          scope: { name: "other-tracer" },
+        },
+      ],
+    };
+
+    mswServer.use(
+      http.get(MACKEREL_BASE_URL + "/api/v0/traces/traceError2", () => {
+        return HttpResponse.json(mockTraceDataWithErrorStatus);
+      }),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "traceError2",
+        errorSpansOnly: true,
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.totalSpans).toBe(2);
+    expect(responseData.spans).toHaveLength(1);
+    expect(responseData.spans[0].spanId).toBe("span1");
+    expect(responseData.spans[0].hasError).toBe(true);
+  });
+
+  it("should detect error spans with case-insensitive status.code", async () => {
+    const mockTraceDataWithCaseInsensitiveError = {
+      spans: [
+        {
+          traceId: "traceCaseInsensitive",
+          spanId: "span1",
+          name: "Service with ERROR status",
+          startTime: 1600000000000,
+          endTime: 1600000000500,
+          attributes: {},
+          events: [],
+          status: { code: "ERROR", message: "Uppercase error" },
+          resource: { service: "service1" },
+          scope: { name: "tracer1" },
+        },
+        {
+          traceId: "traceCaseInsensitive",
+          spanId: "span2",
+          name: "Service with Error status",
+          startTime: 1600000000600,
+          endTime: 1600000000700,
+          attributes: {},
+          events: [],
+          status: { code: "Error", message: "Mixed case error" },
+          resource: { service: "service2" },
+          scope: { name: "tracer2" },
+        },
+        {
+          traceId: "traceCaseInsensitive",
+          spanId: "span3",
+          name: "Successful operation",
+          startTime: 1600000000800,
+          endTime: 1600000000900,
+          attributes: {},
+          events: [],
+          status: { code: "OK" },
+          resource: { service: "service3" },
+          scope: { name: "tracer3" },
+        },
+      ],
+    };
+
+    mswServer.use(
+      http.get(
+        MACKEREL_BASE_URL + "/api/v0/traces/traceCaseInsensitive",
+        () => {
+          return HttpResponse.json(mockTraceDataWithCaseInsensitiveError);
+        },
+      ),
+    );
+
+    const server = setupServer(
+      "get_trace",
+      { inputSchema: TraceTool.GetTraceToolInput.shape },
+      traceTool.getTrace,
+    );
+    const { client } = await setupClient(server);
+
+    const result = await client.callTool({
+      name: "get_trace",
+      arguments: {
+        traceId: "traceCaseInsensitive",
+        errorSpansOnly: true,
+      },
+    });
+
+    const responseData = JSON.parse(result.content[0].text as string);
+
+    expect(responseData.summary.totalSpans).toBe(3);
+    expect(responseData.spans).toHaveLength(2);
+
+    const errorSpanIds = responseData.spans.map((s: any) => s.spanId);
+    expect(errorSpanIds).toContain("span1");
+    expect(errorSpanIds).toContain("span2");
+    expect(errorSpanIds).not.toContain("span3");
+
+    responseData.spans.forEach((span: any) => {
+      expect(span.hasError).toBe(true);
+    });
+  });
+
   it("should handle 404 error", async () => {
     mswServer.use(
       http.get(MACKEREL_BASE_URL + "/api/v0/traces/nonexistent", () => {
