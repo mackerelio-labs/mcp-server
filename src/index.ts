@@ -370,11 +370,6 @@ get_monitor(monitorId="2cSZzK3XfmB")
 - Debug latency issues and identify slow operations
 - Generate documentation of system architecture from trace data
 
-🔑 KEY FEATURES:
-- **Pagination support**: Navigate through large traces with limit/offset parameters
-- **Response optimization**: Reduces data size while preserving critical information
-- **Interactive drill-down**: Support for progressive analysis with multiple queries
-
 <examples>
 ### Basic trace retrieval (first page)
 \`\`\`
