@@ -123,7 +123,7 @@ export class TraceTool {
       optimized.events = span.events;
     }
 
-    if (span.status && (span.status.code !== "OK" || span.status.message)) {
+    if (span.status && span.status.code.toLowerCase() === "error") {
       optimized.status = span.status;
     }
 
