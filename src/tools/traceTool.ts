@@ -219,13 +219,13 @@ export class TraceTool {
         (span: OptimizedSpan) => span.hasError,
       );
 
-      let traceStartTime = 0;
-      let traceEndTime = 0;
       let totalDuration = 0;
 
-      if (paginatedSpans.length > 0) {
-        traceStartTime = Math.min(...paginatedSpans.map((s) => s.startTime));
-        traceEndTime = Math.max(...paginatedSpans.map((s) => s.endTime));
+      if (filteredSpans.length > 0) {
+        const traceStartTime = Math.min(
+          ...filteredSpans.map((s) => s.startTime),
+        );
+        const traceEndTime = Math.max(...filteredSpans.map((s) => s.endTime));
         totalDuration = traceEndTime - traceStartTime;
       }
 
