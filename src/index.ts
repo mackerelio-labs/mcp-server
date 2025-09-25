@@ -5,6 +5,7 @@ import { DashboardTool } from "./tools/dashboardTool.js";
 import { MonitorTool } from "./tools/monitorTool.js";
 import { HostTool } from "./tools/hostTool.js";
 import { ServiceTool } from "./tools/serviceTool.js";
+import { TraceTool } from "./tools/traceTool.js";
 import { MackerelClient } from "./client.js";
 import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
 import { HostMetricsTool } from "./tools/hostMetricsTool.js";
@@ -20,6 +21,7 @@ async function main() {
   const hostMetricsTool = new HostMetricsTool(mackerelClient);
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
+  const traceTool = new TraceTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -353,6 +355,62 @@ get_monitor(monitorId="2cSZzK3XfmB")
       inputSchema: MonitorTool.GetMonitorToolInput.shape,
     },
     monitorTool.getMonitor,
+  );
+
+  server.registerTool(
+    "get_trace",
+    {
+      title: "Get Trace",
+      description: `Retrieve trace data by trace ID from Mackerel for distributed tracing analysis.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Analyze performance bottlenecks in distributed systems
+- Investigate error propagation across microservices
+- Understand request flow and service dependencies
+- Debug latency issues and identify slow operations
+- Generate documentation of system architecture from trace data
+
+<examples>
+### Basic trace retrieval (first page)
+\`\`\`
+get_trace(traceId="abc123def456")
+\`\`\`
+
+### Focus on errors only
+\`\`\`
+get_trace(traceId="abc123def456", errorSpansOnly=true)
+\`\`\`
+
+### Filter spans with duration over 100ms
+\`\`\`
+get_trace(traceId="abc123def456", duration=100)
+\`\`\`
+
+### Detailed analysis with attributes
+\`\`\`
+get_trace(traceId="abc123def456", includeAttributes=true, limit=50)
+\`\`\`
+
+### Minimal view for overview
+\`\`\`
+get_trace(traceId="abc123def456", includeEvents=false, limit=10)
+\`\`\`
+
+### Pagination through large traces
+\`\`\`
+get_trace(traceId="abc123def456", limit=20, offset=0)  # First page
+get_trace(traceId="abc123def456", limit=20, offset=20) # Second page
+\`\`\`
+
+### Combined filtering and pagination
+\`\`\`
+get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
+\`\`\`
+</examples>
+`,
+      inputSchema: TraceTool.GetTraceToolInput.shape,
+    },
+    traceTool.getTrace,
   );
 
   const transport = new StdioServerTransport();
