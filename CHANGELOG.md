@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.2.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.1.0...v0.2.0) - 2025-09-25
+- add step to install latest npm version by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/39
+- Add repository field to package.json by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/40
+- Update README.md with correct Docker image and npx package names by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/41
+- implements a new get_trace tool for retrieving distributed tracing data from Mackerel by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/42
+
 ## [v0.1.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.0.1...v0.1.0) - 2025-09-18
 - MACKEREL_API_KEY -> MACKEREL_APIKEY by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/20
 - Enable working npx by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/22
