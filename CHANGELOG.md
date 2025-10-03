@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.2.1](https://github.com/mackerelio-labs/mcp-server/compare/v0.2.0...v0.2.1) - 2025-10-03
+- feat: add readOnlyHint annotation to various tools for improved documentation by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/43
+
 ## [v0.2.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.1.0...v0.2.0) - 2025-09-25
 - add step to install latest npm version by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/39
 - Add repository field to package.json by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/40
