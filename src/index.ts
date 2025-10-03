@@ -52,6 +52,9 @@ list_alerts(withClosed=true)
 </examples>
 `,
       inputSchema: AlertTool.ListAlertsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     alertTool.listAlerts,
   );
@@ -73,6 +76,9 @@ get_alert(alertId=3Yr)
 </example>
 `,
       inputSchema: AlertTool.GetAlertToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     alertTool.getAlert,
   );
@@ -95,6 +101,9 @@ get_alert_logs(alertId=3Yr)
 </example>
 `,
       inputSchema: AlertTool.GetAlertLogsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     alertTool.getAlertLogs,
   );
@@ -117,6 +126,9 @@ list_dashboards()
 </example>
 `,
       inputSchema: DashboardTool.ListDashboardsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     dashboardTool.listDashboards,
   );
@@ -139,6 +151,9 @@ get_dashboard(dashboardId="3Yr")
 </examples>
 `,
       inputSchema: DashboardTool.GetDashboardToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     dashboardTool.getDashboard,
   );
@@ -215,6 +230,9 @@ list_hosts(limit=20, offset=20)
 </examples>
 `,
       inputSchema: HostTool.ListHostsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     hostTool.listHosts,
   );
@@ -254,6 +272,9 @@ get_host_metrics(hostId="host123", name="ec2.cpu.used", from=1609459200, to=1609
 </examples>
 `,
       inputSchema: HostMetricsTool.GetHostMetricsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     hostMetricsTool.getHostMetrics,
   );
@@ -276,6 +297,9 @@ list_services()
 </examples>
 `,
       inputSchema: ServiceTool.ListServicesToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     serviceTool.listServices,
   );
@@ -310,6 +334,9 @@ get_service_metrics(serviceName="web", name="analytics.page_view", from=16094592
 
 </examples>`,
       inputSchema: ServiceMetricsTool.GetServiceMetricsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     serviceMetricsTool.getServiceMetrics,
   );
@@ -332,6 +359,9 @@ list_monitors()
 </examples>
 `,
       inputSchema: MonitorTool.ListMonitorsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     monitorTool.listMonitors,
   );
@@ -353,6 +383,9 @@ get_monitor(monitorId="2cSZzK3XfmB")
 </examples>
 `,
       inputSchema: MonitorTool.GetMonitorToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     monitorTool.getMonitor,
   );
@@ -409,6 +442,9 @@ get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
 </examples>
 `,
       inputSchema: TraceTool.GetTraceToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
     },
     traceTool.getTrace,
   );
