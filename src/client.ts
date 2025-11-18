@@ -336,6 +336,78 @@ export class MackerelClient {
     return this.request<{ spans: any[] }>("GET", `/api/v0/traces/${traceId}`);
   }
 
+  // GET /api/v0/apm/http-server-stats
+  async getHttpServerStats(
+    serviceName: string,
+    from: number,
+    to: number,
+    serviceNamespace?: string,
+    environment?: string,
+    version?: string,
+    method?: string,
+    route?: string,
+    orderColumn?: string,
+    orderDirection?: string,
+    page?: number,
+    perPage?: number,
+  ): Promise<{
+    results: Array<{
+      method: string;
+      route: string;
+      totalMillis: number;
+      averageMillis: number;
+      approxP95Millis: number;
+      errorRatePercentage: number;
+      requestCount: number;
+    }>;
+    hasNextPage: boolean;
+  }> {
+    const searchParams = new URLSearchParams();
+    searchParams.append("serviceName", serviceName);
+    searchParams.append("from", from.toString());
+    searchParams.append("to", to.toString());
+    if (serviceNamespace) {
+      searchParams.append("serviceNamespace", serviceNamespace);
+    }
+    if (environment) {
+      searchParams.append("environment", environment);
+    }
+    if (version) {
+      searchParams.append("version", version);
+    }
+    if (method) {
+      searchParams.append("method", method);
+    }
+    if (route) {
+      searchParams.append("route", route);
+    }
+    if (orderColumn) {
+      searchParams.append("orderColumn", orderColumn);
+    }
+    if (orderDirection) {
+      searchParams.append("orderDirection", orderDirection);
+    }
+    if (page !== undefined) {
+      searchParams.append("page", page.toString());
+    }
+    if (perPage !== undefined) {
+      searchParams.append("perPage", perPage.toString());
+    }
+
+    return this.request<{
+      results: Array<{
+        method: string;
+        route: string;
+        totalMillis: number;
+        averageMillis: number;
+        approxP95Millis: number;
+        errorRatePercentage: number;
+        requestCount: number;
+      }>;
+      hasNextPage: boolean;
+    }>("GET", "/api/v0/apm/http-server-stats", { searchParams });
+  }
+
   // GET /api/v0/apm/db-query-stats
   async getDbQueryStats(
     serviceName: string,
