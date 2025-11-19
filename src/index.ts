@@ -23,7 +23,7 @@ async function main() {
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
   const traceTool = new TraceTool(mackerelClient);
-  const dbQueryStatsTool = new ApmTool(mackerelClient);
+  const apmTool = new ApmTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -508,7 +508,7 @@ list_http_server_stats(
         readOnlyHint: true,
       },
     },
-    dbQueryStatsTool.listHttpServerStats,
+    apmTool.listHttpServerStats,
   );
 
   server.registerTool(
@@ -567,7 +567,7 @@ list_db_query_stats(
         readOnlyHint: true,
       },
     },
-    dbQueryStatsTool.listDbQueryStats,
+    apmTool.listDbQueryStats,
   );
 
   const transport = new StdioServerTransport();
