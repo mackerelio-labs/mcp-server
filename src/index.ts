@@ -9,6 +9,7 @@ import { TraceTool } from "./tools/traceTool.js";
 import { MackerelClient } from "./client.js";
 import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
 import { HostMetricsTool } from "./tools/hostMetricsTool.js";
+import { ApmTool } from "./tools/apmTool.js";
 
 const BASE_URL = "https://api.mackerelio.com";
 
@@ -22,6 +23,7 @@ async function main() {
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
   const traceTool = new TraceTool(mackerelClient);
+  const dbQueryStatsTool = new ApmTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -447,6 +449,65 @@ get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
       },
     },
     traceTool.getTrace,
+  );
+
+  server.registerTool(
+    "list_db_query_stats",
+    {
+      title: "List Database Query Statistics",
+      description: `Retrieve database query statistics from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Analyze slow database queries
+- Identify high-frequency queries
+- Investigate database performance issues
+- Monitor query execution patterns
+
+<examples>
+### Get DB stats
+\`\`\`
+list_db_query_stats(serviceName="my-service", from=1700000000, to=1700001800)
+\`\`\`
+
+### Filter by environment and version
+\`\`\`
+list_db_query_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  environment="production",
+  version="v1.2.3"
+)
+\`\`\`
+
+### Search for specific queries
+\`\`\`
+list_db_query_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  query="SELECT * FROM users"
+)
+\`\`\`
+
+### Pagination
+\`\`\`
+list_db_query_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  page=10,
+  perPage=50
+)
+\`\`\`
+</examples>
+`,
+      inputSchema: ApmTool.ListDbQueryStatsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
+    },
+    dbQueryStatsTool.listDbQueryStats,
   );
 
   const transport = new StdioServerTransport();

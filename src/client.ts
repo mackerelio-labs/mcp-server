@@ -335,4 +335,68 @@ export class MackerelClient {
   async getTrace(traceId: string): Promise<{ spans: any[] }> {
     return this.request<{ spans: any[] }>("GET", `/api/v0/traces/${traceId}`);
   }
+
+  // GET /api/v0/apm/db-query-stats
+  async getDbQueryStats(
+    serviceName: string,
+    from: number,
+    to: number,
+    serviceNamespace?: string,
+    environment?: string,
+    version?: string,
+    query?: string,
+    orderColumn?: string,
+    orderDirection?: string,
+    page?: number,
+    perPage?: number,
+  ): Promise<{
+    results: Array<{
+      query: string;
+      executionCount: number;
+      totalMillis: number;
+      averageMillis: number;
+      approxP95Millis: number;
+    }>;
+    hasNextPage: boolean;
+  }> {
+    const searchParams = new URLSearchParams();
+    searchParams.append("serviceName", serviceName);
+    searchParams.append("from", from.toString());
+    searchParams.append("to", to.toString());
+    if (serviceNamespace) {
+      searchParams.append("serviceNamespace", serviceNamespace);
+    }
+    if (environment) {
+      searchParams.append("environment", environment);
+    }
+    if (version) {
+      searchParams.append("version", version);
+    }
+    if (query) {
+      searchParams.append("query", query);
+    }
+    if (orderColumn) {
+      searchParams.append("orderColumn", orderColumn);
+    }
+    if (orderDirection) {
+      searchParams.append("orderDirection", orderDirection);
+    }
+    if (page !== undefined) {
+      searchParams.append("page", page.toString());
+    }
+    if (perPage !== undefined) {
+      searchParams.append("perPage", perPage.toString());
+    }
+
+    return this.request<{
+      results: Array<{
+        query: string;
+        executionCount: number;
+        totalMillis: number;
+        averageMillis: number;
+        approxP95Millis: number;
+      }>;
+      hasNextPage: boolean;
+    }>("GET", "/api/v0/apm/db-query-stats", { searchParams });
+  }
 }
