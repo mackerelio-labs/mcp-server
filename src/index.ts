@@ -23,7 +23,7 @@ async function main() {
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
   const traceTool = new TraceTool(mackerelClient);
-  const dbQueryStatsTool = new ApmTool(mackerelClient);
+  const apmTool = new ApmTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -452,6 +452,66 @@ get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
   );
 
   server.registerTool(
+    "list_http_server_stats",
+    {
+      title: "List HTTP Server Statistics",
+      description: `Retrieve HTTP server statistics from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Analyze slow HTTP endpoints
+- Identify high-traffic routes
+- Monitor error rates for HTTP requests
+- Investigate API performance issues
+
+<examples>
+### Get HTTP server stats
+\`\`\`
+list_http_server_stats(serviceName="my-service", from=1700000000, to=1700001800)
+\`\`\`
+
+### Filter by environment and version
+\`\`\`
+list_http_server_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  environment="production",
+  version="v1.2.3"
+)
+\`\`\`
+
+### Filter by HTTP method and route
+\`\`\`
+list_http_server_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  method="GET",
+  route="/api/users"
+)
+\`\`\`
+
+### Pagination
+\`\`\`
+list_http_server_stats(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  page=2,
+  perPage=50
+)
+\`\`\`
+</examples>
+`,
+      inputSchema: ApmTool.ListHttpServerStatsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
+    },
+    apmTool.listHttpServerStats,
+  );
+
+  server.registerTool(
     "list_db_query_stats",
     {
       title: "List Database Query Statistics",
@@ -507,7 +567,7 @@ list_db_query_stats(
         readOnlyHint: true,
       },
     },
-    dbQueryStatsTool.listDbQueryStats,
+    apmTool.listDbQueryStats,
   );
 
   const transport = new StdioServerTransport();
