@@ -38,6 +38,7 @@ Each tool follows this structure:
 4. Use `buildToolResponse()` utility for consistent response formatting and error handling
 5. Tools are registered in `src/index.ts`
 6. Tests are written next to the tool implementation
+7. Add the tool to the `Available tools` section in the README
 
 Notes:
 * About API Documentation Reference:
