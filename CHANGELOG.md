@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.3.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.2.1...v0.3.0) - 2025-11-21
+- Bump vite from 7.1.5 to 7.1.11 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/45
+- Implement `list_db_query_stats` by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/47
+- Implement list_http_server_stats by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/48
+- Add new tools in README by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/49
+
 ## [v0.2.1](https://github.com/mackerelio-labs/mcp-server/compare/v0.2.0...v0.2.1) - 2025-10-03
 - feat: add readOnlyHint annotation to various tools for improved documentation by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/43
 
