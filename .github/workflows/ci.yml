@@ -23,3 +23,15 @@ jobs:
     - run: npm run build
     - run: npm run format:check
     - run: npm run test
+
+  test_latest:
+    name: Node Test for Latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: ./.github/actions/setup-latest-npm
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run format:check
+      - run: npm test
