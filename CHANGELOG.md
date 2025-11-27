@@ -1,8 +1,5 @@
 # Changelog
 
-## [v0.3.2](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.1...v0.3.2) - 2025-11-27
-- Bump body-parser from 2.2.0 to 2.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/52
-
 ## [v0.3.2](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.1...v0.3.2) - 2025-11-26
 - Bump body-parser from 2.2.0 to 2.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/52
 
