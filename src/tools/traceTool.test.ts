@@ -11,6 +11,231 @@ describe("Trace Tool", () => {
   const mackerelClient = new MackerelClient(MACKEREL_BASE_URL, "test-api");
   const traceTool = new TraceTool(mackerelClient);
 
+  describe("listTraces", () => {
+    const mockListTracesData = {
+      results: [
+        {
+          traceId: "abc123def456abc123def456abc12345",
+          serviceName: "my-service",
+          serviceNamespace: "production",
+          environment: "prod",
+          title: "HTTP GET /api/users",
+          traceStartAt: 1700000000,
+          traceLatencyMillis: 150,
+          serviceStartAt: 1700000001,
+          serviceLatencyMillis: 140,
+        },
+        {
+          traceId: "def456abc123def456abc123def45678",
+          serviceName: "my-service",
+          serviceNamespace: "production",
+          environment: "prod",
+          title: "HTTP POST /api/orders",
+          traceStartAt: 1700000100,
+          traceLatencyMillis: 250,
+          serviceStartAt: 1700000101,
+          serviceLatencyMillis: 240,
+        },
+      ],
+      hasNextPage: false,
+    };
+
+    it("should retrieve traces with required parameters", async () => {
+      mswServer.use(
+        http.post(MACKEREL_BASE_URL + "/api/v0/traces", async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          expect(body.serviceName).toBe("my-service");
+          expect(body.from).toBe(1700000000);
+          expect(body.to).toBe(1700001800);
+          return HttpResponse.json(mockListTracesData);
+        }),
+      );
+
+      const server = setupServer(
+        "list_traces",
+        { inputSchema: TraceTool.ListTracesToolInput.shape },
+        traceTool.listTraces,
+      );
+      const { client } = await setupClient(server);
+
+      const result = await client.callTool({
+        name: "list_traces",
+        arguments: {
+          serviceName: "my-service",
+          from: 1700000000,
+          to: 1700001800,
+        },
+      });
+
+      expect(result).toEqual({
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(mockListTracesData),
+          },
+        ],
+      });
+    });
+
+    it("should work with optional parameters", async () => {
+      mswServer.use(
+        http.post(MACKEREL_BASE_URL + "/api/v0/traces", async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          expect(body.serviceName).toBe("my-service");
+          expect(body.from).toBe(1700000000);
+          expect(body.to).toBe(1700001800);
+          expect(body.serviceNamespace).toBe("production");
+          expect(body.environment).toBe("prod");
+          expect(body.version).toBe("v1.2.3");
+          expect(body.traceId).toBe("abc123def456abc123def456abc12345");
+          expect(body.spanName).toBe("HTTP GET /api/users");
+          expect(body.minLatencyMillis).toBe(100);
+          expect(body.maxLatencyMillis).toBe(1000);
+          expect(body.page).toBe(2);
+          expect(body.perPage).toBe(50);
+          expect(body.order).toEqual({ column: "LATENCY", direction: "DESC" });
+          return HttpResponse.json(mockListTracesData);
+        }),
+      );
+
+      const server = setupServer(
+        "list_traces",
+        { inputSchema: TraceTool.ListTracesToolInput.shape },
+        traceTool.listTraces,
+      );
+      const { client } = await setupClient(server);
+
+      const result = await client.callTool({
+        name: "list_traces",
+        arguments: {
+          serviceName: "my-service",
+          from: 1700000000,
+          to: 1700001800,
+          serviceNamespace: "production",
+          environment: "prod",
+          version: "v1.2.3",
+          traceId: "abc123def456abc123def456abc12345",
+          spanName: "HTTP GET /api/users",
+          minLatencyMillis: 100,
+          maxLatencyMillis: 1000,
+          page: 2,
+          perPage: 50,
+          order: { column: "LATENCY", direction: "DESC" },
+        },
+      });
+
+      expect(result).toEqual({
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(mockListTracesData),
+          },
+        ],
+      });
+    });
+
+    it("should work with attribute filters", async () => {
+      mswServer.use(
+        http.post(MACKEREL_BASE_URL + "/api/v0/traces", async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          expect(body.attributes).toEqual([
+            {
+              key: "http.method",
+              value: "GET",
+              type: "string",
+              operator: "EQ",
+            },
+          ]);
+          expect(body.resourceAttributes).toEqual([
+            {
+              key: "service.version",
+              value: "1.0.0",
+              type: "string",
+              operator: "EQ",
+            },
+          ]);
+          return HttpResponse.json(mockListTracesData);
+        }),
+      );
+
+      const server = setupServer(
+        "list_traces",
+        { inputSchema: TraceTool.ListTracesToolInput.shape },
+        traceTool.listTraces,
+      );
+      const { client } = await setupClient(server);
+
+      const result = await client.callTool({
+        name: "list_traces",
+        arguments: {
+          serviceName: "my-service",
+          from: 1700000000,
+          to: 1700001800,
+          attributes: [
+            {
+              key: "http.method",
+              value: "GET",
+              type: "string",
+              operator: "EQ",
+            },
+          ],
+          resourceAttributes: [
+            {
+              key: "service.version",
+              value: "1.0.0",
+              type: "string",
+              operator: "EQ",
+            },
+          ],
+        },
+      });
+
+      expect(result).toEqual({
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(mockListTracesData),
+          },
+        ],
+      });
+    });
+
+    it("should handle issue fingerprint filter", async () => {
+      mswServer.use(
+        http.post(MACKEREL_BASE_URL + "/api/v0/traces", async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          expect(body.issueFingerprint).toBe("issue-fingerprint-123");
+          return HttpResponse.json(mockListTracesData);
+        }),
+      );
+
+      const server = setupServer(
+        "list_traces",
+        { inputSchema: TraceTool.ListTracesToolInput.shape },
+        traceTool.listTraces,
+      );
+      const { client } = await setupClient(server);
+
+      const result = await client.callTool({
+        name: "list_traces",
+        arguments: {
+          serviceName: "my-service",
+          from: 1700000000,
+          to: 1700001800,
+          issueFingerprint: "issue-fingerprint-123",
+        },
+      });
+
+      expect(result).toEqual({
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(mockListTracesData),
+          },
+        ],
+      });
+    });
+  });
   const mockTraceData = {
     spans: [
       {
