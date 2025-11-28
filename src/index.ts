@@ -452,6 +452,77 @@ get_trace(traceId="abc123def456", errorSpansOnly=true, limit=10, offset=0)
   );
 
   server.registerTool(
+    "list_traces",
+    {
+      title: "List Traces",
+      description: `Search and retrieve traces from Mackerel for distributed tracing analysis.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Search for traces within a time range
+- Find slow traces by latency filtering
+- Filter traces by service, environment, or version
+- Investigate distributed system behavior
+
+<examples>
+### Basic trace search
+\`\`\`
+list_traces(serviceName="my-service", from=1700000000, to=1700001800)
+\`\`\`
+
+### Filter by latency
+\`\`\`
+list_traces(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  minLatencyMillis=100,
+  maxLatencyMillis=1000
+)
+\`\`\`
+
+### Filter by environment and version
+\`\`\`
+list_traces(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  environment="production",
+  version="v1.2.3"
+)
+\`\`\`
+
+### Search by span name
+\`\`\`
+list_traces(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  spanName="HTTP GET /api/users"
+)
+\`\`\`
+
+### Pagination and sorting
+\`\`\`
+list_traces(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  page=2,
+  perPage=50,
+  order={ column: "LATENCY", direction: "DESC" }
+)
+\`\`\`
+</examples>
+`,
+      inputSchema: TraceTool.ListTracesToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
+    },
+    traceTool.listTraces,
+  );
+
+  server.registerTool(
     "list_http_server_stats",
     {
       title: "List HTTP Server Statistics",

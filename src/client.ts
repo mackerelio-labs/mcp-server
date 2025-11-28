@@ -471,4 +471,108 @@ export class MackerelClient {
       hasNextPage: boolean;
     }>("GET", "/api/v0/apm/db-query-stats", { searchParams });
   }
+
+  // POST /api/v0/traces
+  async listTraces(params: {
+    serviceName: string;
+    from: number;
+    to: number;
+    serviceNamespace?: string;
+    environment?: string;
+    traceId?: string;
+    spanName?: string;
+    version?: string;
+    issueFingerprint?: string;
+    minLatencyMillis?: number;
+    maxLatencyMillis?: number;
+    attributes?: Array<{
+      key: string;
+      value: string;
+      type: string;
+      operator: string;
+    }>;
+    resourceAttributes?: Array<{
+      key: string;
+      value: string;
+      type: string;
+      operator: string;
+    }>;
+    page?: number;
+    perPage?: number;
+    order?: { column: string; direction: string };
+  }): Promise<{
+    results: Array<{
+      traceId: string;
+      serviceName: string;
+      serviceNamespace: string;
+      environment: string;
+      title: string;
+      traceStartAt: number;
+      traceLatencyMillis: number;
+      serviceStartAt: number;
+      serviceLatencyMillis: number;
+    }>;
+    hasNextPage: boolean;
+  }> {
+    const body: Record<string, any> = {
+      serviceName: params.serviceName,
+      from: params.from,
+      to: params.to,
+    };
+
+    if (params.serviceNamespace) {
+      body.serviceNamespace = params.serviceNamespace;
+    }
+    if (params.environment) {
+      body.environment = params.environment;
+    }
+    if (params.traceId) {
+      body.traceId = params.traceId;
+    }
+    if (params.spanName) {
+      body.spanName = params.spanName;
+    }
+    if (params.version) {
+      body.version = params.version;
+    }
+    if (params.issueFingerprint) {
+      body.issueFingerprint = params.issueFingerprint;
+    }
+    if (params.minLatencyMillis !== undefined) {
+      body.minLatencyMillis = params.minLatencyMillis;
+    }
+    if (params.maxLatencyMillis !== undefined) {
+      body.maxLatencyMillis = params.maxLatencyMillis;
+    }
+    if (params.attributes && params.attributes.length > 0) {
+      body.attributes = params.attributes;
+    }
+    if (params.resourceAttributes && params.resourceAttributes.length > 0) {
+      body.resourceAttributes = params.resourceAttributes;
+    }
+    if (params.page !== undefined) {
+      body.page = params.page;
+    }
+    if (params.perPage !== undefined) {
+      body.perPage = params.perPage;
+    }
+    if (params.order) {
+      body.order = params.order;
+    }
+
+    return this.request<{
+      results: Array<{
+        traceId: string;
+        serviceName: string;
+        serviceNamespace: string;
+        environment: string;
+        title: string;
+        traceStartAt: number;
+        traceLatencyMillis: number;
+        serviceStartAt: number;
+        serviceLatencyMillis: number;
+      }>;
+      hasNextPage: boolean;
+    }>("POST", "/api/v0/traces", { body });
+  }
 }

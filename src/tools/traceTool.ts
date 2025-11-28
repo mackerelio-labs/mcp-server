@@ -46,8 +46,154 @@ interface OptimizedSpan {
   hasError?: boolean;
 }
 
+const AttributeFilterSchema = z.object({
+  key: z.string().describe("Attribute key"),
+  value: z.string().describe("Attribute value as a string"),
+  type: z
+    .enum(["string", "int", "double", "bool"])
+    .describe("Value data type: string, int, double, or bool"),
+  operator: z
+    .enum(["EQ", "NEQ", "GT", "GTE", "LT", "LTE", "STARTS_WITH"])
+    .describe(
+      "Comparison operator. Available operators depend on type: string supports EQ, NEQ, STARTS_WITH; int/double support EQ, GT, GTE, LT, LTE; bool supports EQ, NEQ",
+    ),
+});
+
 export class TraceTool {
   constructor(private mackerelClient: MackerelClient) {}
+
+  static ListTracesToolInput = z.object({
+    serviceName: z
+      .string()
+      .describe(
+        "Service name. Corresponds to `service.name` in OpenTelemetry semantic conventions",
+      ),
+    from: z
+      .number()
+      .int()
+      .positive()
+      .describe("Start time for trace search (Unix epoch seconds)"),
+    to: z
+      .number()
+      .int()
+      .positive()
+      .describe("End time for trace search (Unix epoch seconds)"),
+    serviceNamespace: z
+      .string()
+      .optional()
+      .describe(
+        "Service namespace. Corresponds to `service.namespace` in OpenTelemetry semantic conventions",
+      ),
+    environment: z
+      .string()
+      .optional()
+      .describe(
+        "Environment name. Corresponds to `deployment.environment` or `deployment.environment.name` in OpenTelemetry semantic conventions",
+      ),
+    traceId: z
+      .string()
+      .optional()
+      .describe("Filter by trace ID (32-digit hexadecimal string)"),
+    spanName: z.string().optional().describe("Filter by span name"),
+    version: z
+      .string()
+      .optional()
+      .describe(
+        "Version. Corresponds to `service.version` in OpenTelemetry semantic conventions",
+      ),
+    issueFingerprint: z
+      .string()
+      .optional()
+      .describe("Filter by issue fingerprint"),
+    minLatencyMillis: z
+      .number()
+      .min(0)
+      .optional()
+      .describe("Minimum latency in milliseconds"),
+    maxLatencyMillis: z
+      .number()
+      .min(0)
+      .optional()
+      .describe("Maximum latency in milliseconds"),
+    attributes: z
+      .array(AttributeFilterSchema)
+      .optional()
+      .describe("Custom attribute filter conditions"),
+    resourceAttributes: z
+      .array(AttributeFilterSchema)
+      .optional()
+      .describe("Resource-level attribute filters"),
+    page: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Page number (starting from 1). Default is 1"),
+    perPage: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe("Number of items per page (1-100). Default is 20"),
+    order: z
+      .object({
+        column: z
+          .enum(["LATENCY", "START_AT"])
+          .describe(
+            "Sort column. One of `LATENCY` (trace latency) or `START_AT` (trace timestamp)",
+          ),
+        direction: z
+          .enum(["ASC", "DESC"])
+          .describe(
+            "Sort order. Either `ASC` (ascending) or `DESC` (descending)",
+          ),
+      })
+      .optional()
+      .describe(
+        "Sort preferences. Default is { column: 'START_AT', direction: 'DESC' }",
+      ),
+  });
+
+  listTraces = async ({
+    serviceName,
+    from,
+    to,
+    serviceNamespace,
+    environment,
+    traceId,
+    spanName,
+    version,
+    issueFingerprint,
+    minLatencyMillis,
+    maxLatencyMillis,
+    attributes,
+    resourceAttributes,
+    page,
+    perPage,
+    order,
+  }: z.infer<typeof TraceTool.ListTracesToolInput>) => {
+    return await buildToolResponse(async () => {
+      return await this.mackerelClient.listTraces({
+        serviceName,
+        from,
+        to,
+        serviceNamespace,
+        environment,
+        traceId,
+        spanName,
+        version,
+        issueFingerprint,
+        minLatencyMillis,
+        maxLatencyMillis,
+        attributes,
+        resourceAttributes,
+        page,
+        perPage,
+        order,
+      });
+    });
+  };
 
   static GetTraceToolInput = z.object({
     traceId: z.string().describe("The ID of the trace to retrieve"),
