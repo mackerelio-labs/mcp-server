@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.3.3](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.2...v0.3.3) - 2025-11-28
+- implement list_traces by @tjmtmmnk in https://github.com/mackerelio-labs/mcp-server/pull/55
+
 ## [v0.3.2](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.1...v0.3.2) - 2025-11-26
 - Bump body-parser from 2.2.0 to 2.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/52
 
