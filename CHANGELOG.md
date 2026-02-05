@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.4.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.3...v0.4.0) - 2026-02-05
+- Bump @modelcontextprotocol/sdk from 1.17.2 to 1.24.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/58
+- Bump express from 5.1.0 to 5.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/57
+- Bump qs from 6.14.0 to 6.14.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/60
+- Bump @modelcontextprotocol/sdk from 1.24.0 to 1.25.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/61
+- Bump hono from 4.11.3 to 4.11.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/62
+- Bump hono from 4.11.4 to 4.11.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/63
+- Bump @modelcontextprotocol/sdk from 1.25.2 to 1.26.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/64
+
 ## [v0.3.3](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.2...v0.3.3) - 2025-11-28
 - implement list_traces by @tjmtmmnk in https://github.com/mackerelio-labs/mcp-server/pull/55
 
