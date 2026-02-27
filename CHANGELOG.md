@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.4.0...v0.5.0) - 2026-02-27
+- Bump qs from 6.14.1 to 6.14.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/65
+- Bump ajv from 8.17.1 to 8.18.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/68
+- Bump hono from 4.11.7 to 4.12.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/67
+- Bump rollup from 4.46.3 to 4.59.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/69
+- Bump hono from 4.12.0 to 4.12.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/70
+
 ## [v0.4.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.3...v0.4.0) - 2026-02-05
 - Bump @modelcontextprotocol/sdk from 1.17.2 to 1.24.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/58
 - Bump express from 5.1.0 to 5.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/57
