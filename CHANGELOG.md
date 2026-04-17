@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.5.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.4.0...v0.5.0) - 2026-04-17
+- Bump qs from 6.14.1 to 6.14.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/65
+- Bump ajv from 8.17.1 to 8.18.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/68
+- Bump hono from 4.11.7 to 4.12.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/67
+- Bump rollup from 4.46.3 to 4.59.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/69
+- Bump hono from 4.12.0 to 4.12.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/70
+- Bump @hono/node-server from 1.19.9 to 1.19.10 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/72
+- Bump hono from 4.12.2 to 4.12.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/71
+- Bump hono from 4.12.5 to 4.12.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/74
+- Bump express-rate-limit from 8.2.1 to 8.3.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/73
+- Bump picomatch from 4.0.3 to 4.0.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/75
+- Bump path-to-regexp from 8.3.0 to 8.4.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/76
+- Bump defu from 6.1.4 to 6.1.6 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/77
+- build(deps): bump hono from 4.12.7 to 4.12.12 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/80
+- build(deps): bump @hono/node-server from 1.19.10 to 1.19.13 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/79
+- Bump vite from 7.1.11 to 7.3.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/78
+- build(deps): bump hono from 4.12.12 to 4.12.14 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/81
+
 ## [v0.4.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.3.3...v0.4.0) - 2026-02-05
 - Bump @modelcontextprotocol/sdk from 1.17.2 to 1.24.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/58
 - Bump express from 5.1.0 to 5.2.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/57
