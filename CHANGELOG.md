@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.7.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.6.0...v0.7.0) - 2026-07-22
+- build(deps): bump hono from 4.12.23 to 4.12.27 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/95
+- build(deps): bump body-parser from 2.2.2 to 2.3.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/97
+- build(deps): bump fast-uri from 3.1.2 to 3.1.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/98
+
 ## [v0.6.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.5.0...v0.6.0) - 2026-06-30
 - build(deps): bump qs from 6.14.2 to 6.15.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/88
 - Use npm@11 for node tests by @azukiazusa1 in https://github.com/mackerelio-labs/mcp-server/pull/91
