@@ -575,4 +575,112 @@ export class MackerelClient {
       hasNextPage: boolean;
     }>("POST", "/api/v0/traces", { body });
   }
+
+  // POST /api/v0/logs
+  async findLogs(params: {
+    serviceName: string;
+    from: number;
+    to: number;
+    serviceNamespace?: string;
+    keywords?: string[];
+    severities?: string[];
+    attributes?: Array<{
+      key: string;
+      value?: { value: string; operator: string };
+      valueInt?: { valueInt: number; operator: string };
+      valueDouble?: { valueDouble: number; operator: string };
+      valueBool?: { valueBool: boolean; operator: string };
+    }>;
+    traceId?: string;
+    order?: { column: string; direction: string };
+    first?: number;
+    after?: string;
+    last?: number;
+    before?: string;
+  }): Promise<{
+    results: Array<{
+      cursor: string;
+      timestamp: string;
+      effectiveTimestamp: string;
+      severity: string;
+      severityText: string;
+      severityNumber: number;
+      body: string;
+      traceId?: string;
+      spanId?: string;
+      serviceName: string;
+      serviceNamespace: string;
+      attributes: Array<{ key: string; value: string }>;
+      resourceAttributes: Array<{ key: string; value: string }>;
+      scopeAttributes: Array<{ key: string; value: string }>;
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string;
+      endCursor?: string;
+    };
+  }> {
+    const body: Record<string, any> = {
+      serviceName: params.serviceName,
+      from: new Date(params.from * 1000).toISOString(),
+      to: new Date(params.to * 1000).toISOString(),
+    };
+
+    if (params.serviceNamespace) {
+      body.serviceNamespace = params.serviceNamespace;
+    }
+    if (params.keywords && params.keywords.length > 0) {
+      body.keywords = params.keywords;
+    }
+    if (params.severities && params.severities.length > 0) {
+      body.severities = params.severities;
+    }
+    if (params.attributes && params.attributes.length > 0) {
+      body.attributes = params.attributes;
+    }
+    if (params.traceId) {
+      body.traceId = params.traceId;
+    }
+    if (params.order) {
+      body.order = params.order;
+    }
+    if (params.first !== undefined) {
+      body.first = params.first;
+    }
+    if (params.after) {
+      body.after = params.after;
+    }
+    if (params.last !== undefined) {
+      body.last = params.last;
+    }
+    if (params.before) {
+      body.before = params.before;
+    }
+
+    return this.request<{
+      results: Array<{
+        cursor: string;
+        timestamp: string;
+        effectiveTimestamp: string;
+        severity: string;
+        severityText: string;
+        severityNumber: number;
+        body: string;
+        traceId?: string;
+        spanId?: string;
+        serviceName: string;
+        serviceNamespace: string;
+        attributes: Array<{ key: string; value: string }>;
+        resourceAttributes: Array<{ key: string; value: string }>;
+        scopeAttributes: Array<{ key: string; value: string }>;
+      }>;
+      pageInfo: {
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        startCursor?: string;
+        endCursor?: string;
+      };
+    }>("POST", "/api/v0/logs", { body });
+  }
 }

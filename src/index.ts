@@ -6,12 +6,13 @@ import { MonitorTool } from "./tools/monitorTool.js";
 import { HostTool } from "./tools/hostTool.js";
 import { ServiceTool } from "./tools/serviceTool.js";
 import { TraceTool } from "./tools/traceTool.js";
+import { LogTool } from "./tools/logTool.js";
 import { MackerelClient } from "./client.js";
 import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
 import { HostMetricsTool } from "./tools/hostMetricsTool.js";
 import { ApmTool } from "./tools/apmTool.js";
 
-const BASE_URL = "https://api.mackerelio.com";
+const BASE_URL = process.env.MACKEREL_BASE_URL || "https://api.mackerelio.com";
 
 async function main() {
   const mackerelClient = new MackerelClient(BASE_URL, getApiKey());
@@ -23,6 +24,7 @@ async function main() {
   const serviceTool = new ServiceTool(mackerelClient);
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
   const traceTool = new TraceTool(mackerelClient);
+  const logTool = new LogTool(mackerelClient);
   const apmTool = new ApmTool(mackerelClient);
 
   // Create an MCP server
@@ -520,6 +522,72 @@ list_traces(
       },
     },
     traceTool.listTraces,
+  );
+
+  server.registerTool(
+    "find_logs",
+    {
+      title: "Find Logs",
+      description: `Search and retrieve logs from Mackerel for log analysis and troubleshooting.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Search for logs within a time range
+- Find logs by keyword or severity
+- Investigate logs related to a specific trace
+- Filter logs by custom attributes
+
+<examples>
+### Basic log search
+\`\`\`
+find_logs(serviceName="my-service", from=1700000000, to=1700001800)
+\`\`\`
+
+### Filter by severity and keyword
+\`\`\`
+find_logs(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  keywords=["timeout"],
+  severities=["ERROR", "FATAL"]
+)
+\`\`\`
+
+### Filter by custom attribute
+\`\`\`
+find_logs(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  attributes=[
+    { key: "http.status_code", valueInt: { valueInt: 500, operator: "GTE" } }
+  ]
+)
+\`\`\`
+
+### Logs related to a trace
+\`\`\`
+find_logs(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700001800,
+  traceId="550e8400e29b41d4a716446655440000"
+)
+\`\`\`
+
+### Pagination
+\`\`\`
+find_logs(serviceName="my-service", from=1700000000, to=1700001800, first=50)
+find_logs(serviceName="my-service", from=1700000000, to=1700001800, first=50, after="<endCursor from previous page>")
+\`\`\`
+</examples>
+`,
+      inputSchema: LogTool.FindLogsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
+    },
+    logTool.findLogs,
   );
 
   server.registerTool(
