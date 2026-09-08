@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.8.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.7.0...v0.8.0) - 2026-09-07
+- build(deps-dev): bump postcss from 8.5.15 to 8.5.25 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/99
+- build(deps): bump hono from 4.12.27 to 4.13.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/102
+- build(deps): bump fast-uri from 3.1.4 to 3.1.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/103
+- build(deps): bump @hono/node-server from 1.19.13 to 1.19.17 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/104
+- build(deps): bump ip-address from 10.2.0 to 10.4.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/100
+- build(deps): bump fast-uri from 3.1.5 to 3.1.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/105
+
 ## [v0.7.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.6.0...v0.7.0) - 2026-07-22
 - build(deps): bump hono from 4.12.23 to 4.12.27 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/95
 - build(deps): bump body-parser from 2.2.2 to 2.3.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/97
