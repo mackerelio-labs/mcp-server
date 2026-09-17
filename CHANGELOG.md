@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.9.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.8.0...v0.9.0) - 2026-09-17
+- build(deps): bump hono from 4.13.0 to 4.13.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/109
+- build(deps): bump qs from 6.15.2 to 6.16.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/107
+- build(deps): bump @vitest/mocker and vitest by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/108
+
 ## [v0.8.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.7.0...v0.8.0) - 2026-09-07
 - build(deps-dev): bump postcss from 8.5.15 to 8.5.25 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/99
 - build(deps): bump hono from 4.12.27 to 4.13.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/102
