@@ -10,6 +10,7 @@ import { MackerelClient } from "./client.js";
 import { ServiceMetricsTool } from "./tools/serviceMetricsTool.js";
 import { HostMetricsTool } from "./tools/hostMetricsTool.js";
 import { ApmTool } from "./tools/apmTool.js";
+import { LogTool } from "./tools/logTool.js";
 
 const BASE_URL = "https://api.mackerelio.com";
 
@@ -24,6 +25,7 @@ async function main() {
   const serviceMetricsTool = new ServiceMetricsTool(mackerelClient);
   const traceTool = new TraceTool(mackerelClient);
   const apmTool = new ApmTool(mackerelClient);
+  const logTool = new LogTool(mackerelClient);
 
   // Create an MCP server
   const server = new McpServer({
@@ -639,6 +641,74 @@ list_db_query_stats(
       },
     },
     apmTool.listDbQueryStats,
+  );
+
+  server.registerTool(
+    "search_logs",
+    {
+      title: "Search Logs",
+      description: `Search logs of a service from Mackerel.
+
+🔍 USE THIS TOOL WHEN USERS:
+- Investigate errors or incidents by reading application logs
+- Find logs related to a specific trace (traceId)
+- Look for logs containing specific keywords or matching structured (JSON) body fields
+
+📏 KEEPING RESPONSES SMALL:
+- Omit \`from\` / \`to\` to search relative to the current time (\`lookbackMinutes\`, default 60). The response includes the actual \`timeRange\` searched
+- Narrow the time range and use severities / keywords / bodyAttributes filters first
+- By default only timestamp, severity, body, traceId and spanId are returned. Use \`fields\` to request attributes only when needed
+- Log bodies longer than \`maxBodyLength\` are truncated and marked with \`bodyTruncated: true\`
+- To get more logs, pass \`pagination.nextPageCursor\` as \`pageCursor\` with all other parameters unchanged and \`from\` / \`to\` set to the first response's \`timeRange\`. The API allows 1 request per second
+
+<examples>
+### Error logs in the last hour (from/to default to the last 60 minutes)
+\`\`\`
+search_logs(serviceName="my-service", severities=["ERROR", "FATAL"])
+\`\`\`
+
+### Logs in the last 15 minutes
+\`\`\`
+search_logs(serviceName="my-service", lookbackMinutes=15)
+\`\`\`
+
+### Logs related to a trace in chronological order
+\`\`\`
+search_logs(serviceName="my-service", from=1700000000, to=1700003600, traceId="0af7651916cd43dd8448eb211c80319c", order="ASC")
+\`\`\`
+
+### Keyword search
+\`\`\`
+search_logs(serviceName="my-service", from=1700000000, to=1700003600, keywords=["timeout", "payment"])
+\`\`\`
+
+### Filter JSON bodies: {"res": {"status": 500+}}
+\`\`\`
+search_logs(
+  serviceName="my-service",
+  from=1700000000,
+  to=1700003600,
+  bodyAttributes=[{keyPath: ["res", "status"], value: "500", type: "int", operator: "GTE"}]
+)
+\`\`\`
+
+### Include log attributes
+\`\`\`
+search_logs(serviceName="my-service", from=1700000000, to=1700003600, fields=["timestamp", "body", "attributes", "resourceAttributes"])
+\`\`\`
+
+### Next page
+\`\`\`
+search_logs(serviceName="my-service", from=<timeRange.from>, to=<timeRange.to>, severities=["ERROR"], pageCursor={direction: "NEXT", cursor: "<pagination.nextPageCursor.cursor>"})
+\`\`\`
+</examples>
+`,
+      inputSchema: LogTool.SearchLogsToolInput.shape,
+      annotations: {
+        readOnlyHint: true,
+      },
+    },
+    logTool.searchLogs,
   );
 
   const transport = new StdioServerTransport();
