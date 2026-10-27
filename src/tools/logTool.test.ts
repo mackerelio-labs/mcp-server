@@ -86,7 +86,12 @@ describe("Log Tool", () => {
       pagination: {
         hasNextPage: true,
         hasPreviousPage: false,
-        nextPageCursor: { direction: "NEXT", cursor: "cursor-1" },
+        nextPageCursor: {
+          direction: "NEXT",
+          cursor: "cursor-1",
+          from: 1700000000,
+          to: 1700003600,
+        },
         previousPageCursor: null,
       },
     });
@@ -117,14 +122,12 @@ describe("Log Tool", () => {
         operator: "GTE",
       },
     ];
-    const pageCursor = { direction: "NEXT", cursor: "cursor-1" };
     const result = await callSearchLogs({
       ...baseArgs,
       keywords: ["timeout"],
       severities: ["ERROR", "FATAL"],
       bodyAttributes,
       order: "ASC",
-      pageCursor,
       perPage: 100,
     });
 
@@ -134,7 +137,6 @@ describe("Log Tool", () => {
       severities: ["ERROR", "FATAL"],
       bodyAttributes,
       order: { column: "TIMESTAMP", direction: "ASC" },
-      pageCursor,
       perPage: 100,
     });
     expect(parse(result)).toMatchObject({
@@ -144,6 +146,47 @@ describe("Log Tool", () => {
         hasPreviousPage: true,
         nextPageCursor: null,
         previousPageCursor: null,
+      },
+    });
+  });
+
+  it("searches the time range carried by the cursor", async () => {
+    const range = { from: baseArgs.from, to: baseArgs.to };
+    let requestBody: Record<string, unknown> | undefined;
+    mswServer.use(
+      http.post(MACKEREL_BASE_URL + "/api/v0/logs", async ({ request }) => {
+        requestBody = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({
+          results: [mockLog],
+          pagination: {
+            hasNextPage: true,
+            hasPreviousPage: true,
+            startCursor: "cursor-2",
+            endCursor: "cursor-3",
+          },
+        });
+      }),
+    );
+
+    const result = await callSearchLogs({
+      serviceName: "my-service",
+      lookbackMinutes: 15,
+      pageCursor: { direction: "NEXT", cursor: "cursor-1", ...range },
+    });
+
+    expect(requestBody).toMatchObject({
+      ...range,
+      pageCursor: { direction: "NEXT", cursor: "cursor-1" },
+    });
+    expect(parse(result)).toMatchObject({
+      timeRange: range,
+      pagination: {
+        nextPageCursor: { direction: "NEXT", cursor: "cursor-3", ...range },
+        previousPageCursor: {
+          direction: "PREVIOUS",
+          cursor: "cursor-2",
+          ...range,
+        },
       },
     });
   });
@@ -237,6 +280,23 @@ describe("Log Tool", () => {
       { body: "x".repeat(10), bodyTruncated: true },
     ]);
   });
+
+  it.each([
+    ["int", "NEQ"],
+    ["double", "NEQ"],
+    ["string", "GT"],
+    ["bool", "STARTS_WITH"],
+  ])(
+    "rejects operators unsupported by the type (%s %s)",
+    async (type, operator) => {
+      await expect(
+        callSearchLogs({
+          ...baseArgs,
+          bodyAttributes: [{ keyPath: ["status"], value: "1", type, operator }],
+        }),
+      ).rejects.toThrow(/Invalid enum value/);
+    },
+  );
 
   it("explains rate limit errors", async () => {
     mswServer.use(

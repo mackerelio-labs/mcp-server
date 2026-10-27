@@ -68,25 +68,43 @@ const PageCursorSchema = z.object({
       "NEXT returns logs after the cursor in sort order, PREVIOUS returns logs before it",
     ),
   cursor: z.string().describe("Cursor string returned by a previous call"),
+  from: z
+    .number()
+    .int()
+    .positive()
+    .describe("Start time of the search the cursor belongs to"),
+  to: z
+    .number()
+    .int()
+    .positive()
+    .describe("End time of the search the cursor belongs to"),
 });
 
-const BodyAttributeFilterSchema = z.object({
-  keyPath: z
-    .array(z.string())
-    .min(1)
-    .describe(
-      'Path to the field in a JSON log body, e.g. ["req", "method"] for {"req": {"method": "GET"}}',
-    ),
-  value: z.string().describe("Value to compare, always given as a string"),
-  type: z
-    .enum(["string", "int", "double", "bool"])
-    .describe("Value data type: string, int, double, or bool"),
-  operator: z
-    .enum(["EQ", "NEQ", "GT", "GTE", "LT", "LTE", "STARTS_WITH"])
-    .describe(
-      "Comparison operator. string supports EQ, NEQ, STARTS_WITH; int/double support EQ, NEQ, GT, GTE, LT, LTE; bool supports EQ, NEQ",
-    ),
-});
+const bodyAttributeFilter = <T extends string, O extends [string, ...string[]]>(
+  type: T,
+  operators: O,
+) =>
+  z.object({
+    keyPath: z
+      .array(z.string())
+      .min(1)
+      .describe(
+        'Path to the field in a JSON log body, e.g. ["req", "method"] for {"req": {"method": "GET"}}',
+      ),
+    value: z.string().describe("Value to compare, always given as a string"),
+    type: z.literal(type).describe("Value data type"),
+    operator: z
+      .enum(operators)
+      .describe(`Comparison operator for ${type}: ${operators.join(", ")}`),
+  });
+
+// 利用できる operator は type によって異なる。
+const BodyAttributeFilterSchema = z.discriminatedUnion("type", [
+  bodyAttributeFilter("string", ["EQ", "NEQ", "STARTS_WITH"]),
+  bodyAttributeFilter("int", ["EQ", "GT", "GTE", "LT", "LTE"]),
+  bodyAttributeFilter("double", ["EQ", "GT", "GTE", "LT", "LTE"]),
+  bodyAttributeFilter("bool", ["EQ", "NEQ"]),
+]);
 
 const ERROR_HINTS: Record<number, string> = {
   400: "Check that `to` is not earlier than `from`, the range is 30 days or less, and `traceId` / `bodyAttributes` are well-formed (e.g. operator is supported for the type).",
@@ -101,12 +119,16 @@ function withErrorHint(error: unknown): Error {
   return new Error(hint ? `${message}\nHint: ${hint}` : message);
 }
 
+// カーソルは検索した期間の中でしか有効でないので、期間をカーソルに含めて次のページでも同じ期間を使わせる。
 function toPageCursor(
   direction: "NEXT" | "PREVIOUS",
   available: boolean,
   cursor: string | null,
+  timeRange: { from: number; to: number },
 ) {
-  return available && cursor ? { direction, cursor } : null;
+  return available && cursor
+    ? { direction, cursor, from: timeRange.from, to: timeRange.to }
+    : null;
 }
 
 export class LogTool {
@@ -169,7 +191,7 @@ export class LogTool {
       .optional()
       .describe("Sort order by timestamp. Default is DESC (newest first)"),
     pageCursor: PageCursorSchema.optional().describe(
-      "Pass `pagination.nextPageCursor` or `pagination.previousPageCursor` from a previous response as-is. Keep every other parameter unchanged between pages, and pass `timeRange.from` / `timeRange.to` of the first response as `from` / `to`",
+      "Pass `pagination.nextPageCursor` or `pagination.previousPageCursor` from a previous response as-is. The cursor carries the time range, so `from`, `to` and `lookbackMinutes` are ignored. Keep the filters and `order` unchanged between pages",
     ),
     perPage: z
       .number()
@@ -213,7 +235,9 @@ export class LogTool {
     fields = DEFAULT_FIELDS,
     maxBodyLength = 1000,
   }: z.infer<typeof LogTool.SearchLogsToolInput>) => {
-    const timeRange = toTimeRange(from ?? to - lookbackMinutes * 60, to);
+    const timeRange = pageCursor
+      ? toTimeRange(pageCursor.from, pageCursor.to)
+      : toTimeRange(from ?? to - lookbackMinutes * 60, to);
     return await buildToolResponse(async () => {
       const response = await this.mackerelClient
         .searchLogs({
@@ -226,7 +250,10 @@ export class LogTool {
           traceId,
           bodyAttributes,
           order: order ? { column: "TIMESTAMP", direction: order } : undefined,
-          pageCursor,
+          pageCursor: pageCursor && {
+            direction: pageCursor.direction,
+            cursor: pageCursor.cursor,
+          },
           perPage,
         })
         .catch((error) => {
@@ -238,7 +265,7 @@ export class LogTool {
         logs: response.results.map((log) =>
           this.projectLog(log, fields, maxBodyLength),
         ),
-        pagination: this.buildPagination(response.pagination),
+        pagination: this.buildPagination(response.pagination, timeRange),
       };
     }, "search_logs");
   };
@@ -258,7 +285,10 @@ export class LogTool {
     return projected;
   }
 
-  private buildPagination(pagination: LogPagination) {
+  private buildPagination(
+    pagination: LogPagination,
+    timeRange: { from: number; to: number },
+  ) {
     return {
       hasNextPage: pagination.hasNextPage,
       hasPreviousPage: pagination.hasPreviousPage,
@@ -266,11 +296,13 @@ export class LogTool {
         "NEXT",
         pagination.hasNextPage,
         pagination.endCursor,
+        timeRange,
       ),
       previousPageCursor: toPageCursor(
         "PREVIOUS",
         pagination.hasPreviousPage,
         pagination.startCursor,
+        timeRange,
       ),
     };
   }

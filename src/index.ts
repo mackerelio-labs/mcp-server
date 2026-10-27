@@ -659,7 +659,7 @@ list_db_query_stats(
 - Narrow the time range and use severities / keywords / bodyAttributes filters first
 - By default only timestamp, severity, body, traceId and spanId are returned. Use \`fields\` to request attributes only when needed
 - Log bodies longer than \`maxBodyLength\` are truncated and marked with \`bodyTruncated: true\`
-- To get more logs, pass \`pagination.nextPageCursor\` as \`pageCursor\` with all other parameters unchanged and \`from\` / \`to\` set to the first response's \`timeRange\`. The API allows 1 request per second
+- To get more logs, pass \`pagination.nextPageCursor\` as \`pageCursor\` as-is with the same filters. The cursor carries the time range, so \`from\` / \`to\` are not needed. The API allows 1 request per second
 
 <examples>
 ### Error logs in the last hour (from/to default to the last 60 minutes)
@@ -699,7 +699,7 @@ search_logs(serviceName="my-service", from=1700000000, to=1700003600, fields=["t
 
 ### Next page
 \`\`\`
-search_logs(serviceName="my-service", from=<timeRange.from>, to=<timeRange.to>, severities=["ERROR"], pageCursor={direction: "NEXT", cursor: "<pagination.nextPageCursor.cursor>"})
+search_logs(serviceName="my-service", severities=["ERROR"], pageCursor=<pagination.nextPageCursor>)
 \`\`\`
 </examples>
 `,
