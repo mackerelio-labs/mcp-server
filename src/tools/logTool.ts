@@ -98,7 +98,6 @@ const bodyAttributeFilter = <T extends string, O extends [string, ...string[]]>(
       .describe(`Comparison operator for ${type}: ${operators.join(", ")}`),
   });
 
-// 利用できる operator は type によって異なる。
 const BodyAttributeFilterSchema = z.discriminatedUnion("type", [
   bodyAttributeFilter("string", ["EQ", "NEQ", "STARTS_WITH"]),
   bodyAttributeFilter("int", ["EQ", "GT", "GTE", "LT", "LTE"]),
@@ -119,7 +118,6 @@ function withErrorHint(error: unknown): Error {
   return new Error(hint ? `${message}\nHint: ${hint}` : message);
 }
 
-// カーソルは検索した期間の中でしか有効でないので、期間をカーソルに含めて次のページでも同じ期間を使わせる。
 function toPageCursor(
   direction: "NEXT" | "PREVIOUS",
   available: boolean,
