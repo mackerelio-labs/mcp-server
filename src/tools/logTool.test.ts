@@ -289,12 +289,15 @@ describe("Log Tool", () => {
   ])(
     "rejects operators unsupported by the type (%s %s)",
     async (type, operator) => {
-      await expect(
-        callSearchLogs({
-          ...baseArgs,
-          bodyAttributes: [{ keyPath: ["status"], value: "1", type, operator }],
-        }),
-      ).rejects.toThrow(/Invalid enum value/);
+      const result = await callSearchLogs({
+        ...baseArgs,
+        bodyAttributes: [{ keyPath: ["status"], value: "1", type, operator }],
+      });
+
+      expect(result.isError).toBe(true);
+      expect((result.content as Array<{ text: string }>)[0].text).toContain(
+        "Invalid enum value",
+      );
     },
   );
 
