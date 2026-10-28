@@ -91,6 +91,7 @@ describe("Log Tool", () => {
           cursor: "cursor-1",
           from: 1700000000,
           to: 1700003600,
+          order: "DESC",
         },
         previousPageCursor: null,
       },
@@ -150,8 +151,8 @@ describe("Log Tool", () => {
     });
   });
 
-  it("searches the time range carried by the cursor", async () => {
-    const range = { from: baseArgs.from, to: baseArgs.to };
+  it("searches the time range and order carried by the cursor", async () => {
+    const range = { from: baseArgs.from, to: baseArgs.to, order: "ASC" };
     let requestBody: Record<string, unknown> | undefined;
     mswServer.use(
       http.post(MACKEREL_BASE_URL + "/api/v0/logs", async ({ request }) => {
@@ -171,15 +172,18 @@ describe("Log Tool", () => {
     const result = await callSearchLogs({
       serviceName: "my-service",
       lookbackMinutes: 15,
+      order: "DESC",
       pageCursor: { direction: "NEXT", cursor: "cursor-1", ...range },
     });
 
     expect(requestBody).toMatchObject({
-      ...range,
+      from: range.from,
+      to: range.to,
+      order: { column: "TIMESTAMP", direction: "ASC" },
       pageCursor: { direction: "NEXT", cursor: "cursor-1" },
     });
     expect(parse(result)).toMatchObject({
-      timeRange: range,
+      timeRange: { from: range.from, to: range.to },
       pagination: {
         nextPageCursor: { direction: "NEXT", cursor: "cursor-3", ...range },
         previousPageCursor: {
@@ -298,6 +302,31 @@ describe("Log Tool", () => {
       expect((result.content as Array<{ text: string }>)[0].text).toContain(
         "Invalid enum value",
       );
+    },
+  );
+
+  it.each([
+    [{ from: 1700003600, to: 1700000000 }, "must be later than"],
+    [{ from: 1700000000, to: 1700000000 }, "must be later than"],
+    [{ from: 1700000000, to: 1700000000 + 31 * 86400 }, "30 days or less"],
+  ])(
+    "rejects invalid time range %j without calling the API",
+    async (range, message) => {
+      let called = false;
+      mswServer.use(
+        http.post(MACKEREL_BASE_URL + "/api/v0/logs", () => {
+          called = true;
+          return HttpResponse.json({});
+        }),
+      );
+
+      const result = await callSearchLogs({ ...baseArgs, ...range });
+
+      expect(result.isError).toBe(true);
+      expect((result.content as Array<{ text: string }>)[0].text).toContain(
+        message,
+      );
+      expect(called).toBe(false);
     },
   );
 

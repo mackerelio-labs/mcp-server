@@ -28,18 +28,10 @@ const DEFAULT_TOKEN_LIMIT_ADVICE = `- Using the limit parameter to reduce the nu
 - Using offset or nextId parameters for pagination
 - Applying more specific filters to narrow down the results`;
 
-const TOKEN_LIMIT_ADVICE: Record<string, string> = {
-  search_logs: `- Reducing perPage and following pagination.nextPageCursor
-- Requesting fewer fields (attributes / resourceAttributes are large) or a smaller maxBodyLength
-- Narrowing the time range or adding severities / keywords / bodyAttributes filters`,
-};
-
 function createTokenLimitErrorMessage(
   estimatedTokens: number,
-  toolName?: string,
+  advice = DEFAULT_TOKEN_LIMIT_ADVICE,
 ): string {
-  const advice =
-    (toolName && TOKEN_LIMIT_ADVICE[toolName]) ?? DEFAULT_TOKEN_LIMIT_ADVICE;
   return `Response too large (estimated ${estimatedTokens.toLocaleString()} tokens, limit ${TOKEN_LIMIT.toLocaleString()} tokens). Please resolve this by:
 ${advice}`;
 }
@@ -208,6 +200,7 @@ ${getAvailableServiceMetrics()}
 export async function buildToolResponse(
   fn: () => Promise<unknown>,
   toolName?: string,
+  tokenLimitAdvice?: string,
 ): Promise<Awaited<ReturnType<ToolCallback>>> {
   try {
     const result = await fn();
@@ -219,7 +212,10 @@ export async function buildToolResponse(
         content: [
           {
             type: "text",
-            text: createTokenLimitErrorMessage(estimatedTokens, toolName),
+            text: createTokenLimitErrorMessage(
+              estimatedTokens,
+              tokenLimitAdvice,
+            ),
           },
         ],
         isError: true,

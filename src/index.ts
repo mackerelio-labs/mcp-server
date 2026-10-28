@@ -655,37 +655,39 @@ list_db_query_stats(
 - Look for logs containing specific keywords or matching structured (JSON) body fields
 
 📏 KEEPING RESPONSES SMALL:
+- Pass \`serviceNamespace\` when the service has one. Without it, only services without a namespace are searched
 - Omit \`from\` / \`to\` to search relative to the current time (\`lookbackMinutes\`, default 60). The response includes the actual \`timeRange\` searched
 - Narrow the time range and use severities / keywords / bodyAttributes filters first
 - By default only timestamp, severity, body, traceId and spanId are returned. Use \`fields\` to request attributes only when needed
 - Log bodies longer than \`maxBodyLength\` are truncated and marked with \`bodyTruncated: true\`
-- To get more logs, pass \`pagination.nextPageCursor\` as \`pageCursor\` as-is with the same filters. The cursor carries the time range, so \`from\` / \`to\` are not needed. The API allows 1 request per second
+- To get more logs, pass \`pagination.nextPageCursor\` as \`pageCursor\` as-is with the same filters. The cursor carries the time range and sort order, so \`from\` / \`to\` / \`order\` are not needed. The API allows 1 request per second
 
 <examples>
 ### Error logs in the last hour (from/to default to the last 60 minutes)
 \`\`\`
-search_logs(serviceName="my-service", severities=["ERROR", "FATAL"])
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", severities=["ERROR", "FATAL"])
 \`\`\`
 
 ### Logs in the last 15 minutes
 \`\`\`
-search_logs(serviceName="my-service", lookbackMinutes=15)
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", lookbackMinutes=15)
 \`\`\`
 
 ### Logs related to a trace in chronological order
 \`\`\`
-search_logs(serviceName="my-service", from=1700000000, to=1700003600, traceId="0af7651916cd43dd8448eb211c80319c", order="ASC")
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", from=1700000000, to=1700003600, traceId="0af7651916cd43dd8448eb211c80319c", order="ASC")
 \`\`\`
 
 ### Keyword search
 \`\`\`
-search_logs(serviceName="my-service", from=1700000000, to=1700003600, keywords=["timeout", "payment"])
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", from=1700000000, to=1700003600, keywords=["timeout", "payment"])
 \`\`\`
 
 ### Filter JSON bodies: {"res": {"status": 500+}}
 \`\`\`
 search_logs(
   serviceName="my-service",
+  serviceNamespace="my-namespace",
   from=1700000000,
   to=1700003600,
   bodyAttributes=[{keyPath: ["res", "status"], value: "500", type: "int", operator: "GTE"}]
@@ -694,12 +696,12 @@ search_logs(
 
 ### Include log attributes
 \`\`\`
-search_logs(serviceName="my-service", from=1700000000, to=1700003600, fields=["timestamp", "body", "attributes", "resourceAttributes"])
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", from=1700000000, to=1700003600, fields=["timestamp", "body", "attributes", "resourceAttributes"])
 \`\`\`
 
 ### Next page
 \`\`\`
-search_logs(serviceName="my-service", severities=["ERROR"], pageCursor=<pagination.nextPageCursor>)
+search_logs(serviceName="my-service", serviceNamespace="my-namespace", severities=["ERROR"], pageCursor=<pagination.nextPageCursor>)
 \`\`\`
 </examples>
 `,

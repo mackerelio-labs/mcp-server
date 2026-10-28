@@ -78,6 +78,9 @@ const PageCursorSchema = z.object({
     .int()
     .positive()
     .describe("End time of the search the cursor belongs to"),
+  order: z
+    .enum(["ASC", "DESC"])
+    .describe("Sort order of the search the cursor belongs to"),
 });
 
 const bodyAttributeFilter = <T extends string, O extends [string, ...string[]]>(
@@ -118,15 +121,32 @@ function withErrorHint(error: unknown): Error {
   return new Error(hint ? `${message}\nHint: ${hint}` : message);
 }
 
+const TOKEN_LIMIT_ADVICE = `- Reducing perPage and following pagination.nextPageCursor
+- Requesting fewer fields (attributes / resourceAttributes are large) or a smaller maxBodyLength
+- Narrowing the time range or adding severities / keywords / bodyAttributes filters`;
+
+function validateTimeRange({ from, to }: { from: number; to: number }) {
+  if (to <= from) {
+    throw new Error(
+      `Invalid time range: \`to\` (${to}) must be later than \`from\` (${from}).`,
+    );
+  }
+  if (to - from > MAX_LOOKBACK_MINUTES * 60) {
+    throw new Error(
+      `Invalid time range: the range from \`from\` to \`to\` must be 30 days or less (got ${Math.ceil((to - from) / 86400)} days).`,
+    );
+  }
+}
+
+type SearchContext = { from: number; to: number; order: "ASC" | "DESC" };
+
 function toPageCursor(
   direction: "NEXT" | "PREVIOUS",
   available: boolean,
   cursor: string | null,
-  timeRange: { from: number; to: number },
+  context: SearchContext,
 ) {
-  return available && cursor
-    ? { direction, cursor, from: timeRange.from, to: timeRange.to }
-    : null;
+  return available && cursor ? { direction, cursor, ...context } : null;
 }
 
 export class LogTool {
@@ -134,7 +154,12 @@ export class LogTool {
 
   static SearchLogsToolInput = z.object({
     serviceName: z.string().describe("Service name"),
-    serviceNamespace: z.string().optional().describe("Service namespace"),
+    serviceNamespace: z
+      .string()
+      .optional()
+      .describe(
+        "Service namespace. Corresponds to `service.namespace` in OpenTelemetry semantic conventions. When omitted, only services without a namespace are searched, so always pass it for services that have one",
+      ),
     from: z
       .number()
       .int()
@@ -189,7 +214,7 @@ export class LogTool {
       .optional()
       .describe("Sort order by timestamp. Default is DESC (newest first)"),
     pageCursor: PageCursorSchema.optional().describe(
-      "Pass `pagination.nextPageCursor` or `pagination.previousPageCursor` from a previous response as-is. The cursor carries the time range, so `from`, `to` and `lookbackMinutes` are ignored. Keep the filters and `order` unchanged between pages",
+      "Pass `pagination.nextPageCursor` or `pagination.previousPageCursor` from a previous response as-is. The cursor carries the time range and sort order, so `from`, `to`, `lookbackMinutes` and `order` are ignored. Keep the filters unchanged between pages",
     ),
     perPage: z
       .number()
@@ -236,36 +261,46 @@ export class LogTool {
     const timeRange = pageCursor
       ? toTimeRange(pageCursor.from, pageCursor.to)
       : toTimeRange(from ?? to - lookbackMinutes * 60, to);
-    return await buildToolResponse(async () => {
-      const response = await this.mackerelClient
-        .searchLogs({
-          serviceName,
-          serviceNamespace,
-          from: timeRange.from,
-          to: timeRange.to,
-          keywords,
-          severities,
-          traceId,
-          bodyAttributes,
-          order: order ? { column: "TIMESTAMP", direction: order } : undefined,
-          pageCursor: pageCursor && {
-            direction: pageCursor.direction,
-            cursor: pageCursor.cursor,
-          },
-          perPage,
-        })
-        .catch((error) => {
-          throw withErrorHint(error);
-        });
+    const direction = pageCursor?.order ?? order ?? "DESC";
+    return await buildToolResponse(
+      async () => {
+        validateTimeRange(timeRange);
+        const response = await this.mackerelClient
+          .searchLogs({
+            serviceName,
+            serviceNamespace,
+            from: timeRange.from,
+            to: timeRange.to,
+            keywords,
+            severities,
+            traceId,
+            bodyAttributes,
+            order: { column: "TIMESTAMP", direction },
+            pageCursor: pageCursor && {
+              direction: pageCursor.direction,
+              cursor: pageCursor.cursor,
+            },
+            perPage,
+          })
+          .catch((error) => {
+            throw withErrorHint(error);
+          });
 
-      return {
-        timeRange,
-        logs: response.results.map((log) =>
-          this.projectLog(log, fields, maxBodyLength),
-        ),
-        pagination: this.buildPagination(response.pagination, timeRange),
-      };
-    }, "search_logs");
+        return {
+          timeRange,
+          logs: response.results.map((log) =>
+            this.projectLog(log, fields, maxBodyLength),
+          ),
+          pagination: this.buildPagination(response.pagination, {
+            from: timeRange.from,
+            to: timeRange.to,
+            order: direction,
+          }),
+        };
+      },
+      "search_logs",
+      TOKEN_LIMIT_ADVICE,
+    );
   };
 
   private projectLog(
@@ -283,10 +318,7 @@ export class LogTool {
     return projected;
   }
 
-  private buildPagination(
-    pagination: LogPagination,
-    timeRange: { from: number; to: number },
-  ) {
+  private buildPagination(pagination: LogPagination, context: SearchContext) {
     return {
       hasNextPage: pagination.hasNextPage,
       hasPreviousPage: pagination.hasPreviousPage,
@@ -294,13 +326,13 @@ export class LogTool {
         "NEXT",
         pagination.hasNextPage,
         pagination.endCursor,
-        timeRange,
+        context,
       ),
       previousPageCursor: toPageCursor(
         "PREVIOUS",
         pagination.hasPreviousPage,
         pagination.startCursor,
-        timeRange,
+        context,
       ),
     };
   }
