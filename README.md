@@ -66,3 +66,4 @@ The MCP server can be run either via Docker or npx.
 * `list_traces`: - Search and retrieve traces.
 * `list_http_server_stats` - Retrieve HTTP server statistics.
 * `list_db_query_stats` - Retrieve database query statistics.
+* `search_logs` - Search logs of a service.

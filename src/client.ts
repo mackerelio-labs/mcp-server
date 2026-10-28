@@ -2,6 +2,54 @@ import { z } from "zod";
 import { DashboardTool } from "./tools/dashboardTool.js";
 import { applyPagination } from "./tools/util.js";
 
+export interface LogAttribute {
+  key: string;
+  value: { valueType: string; stringValue: string };
+}
+
+export interface LogRecord {
+  cursor: string;
+  timestamp: string;
+  severity: string;
+  severityNumber: number;
+  body: string;
+  traceId: string | null;
+  spanId: string | null;
+  serviceName: string;
+  serviceNamespace: string | null;
+  attributes: LogAttribute[];
+  resourceAttributes: LogAttribute[];
+  scopeAttributes: LogAttribute[];
+}
+
+export interface LogPagination {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string | null;
+  endCursor: string | null;
+}
+
+export interface LogBodyAttributeFilter {
+  keyPath: string[];
+  value: string;
+  type: string;
+  operator: string;
+}
+
+export interface SearchLogsParams {
+  serviceName: string;
+  serviceNamespace?: string;
+  from: number;
+  to: number;
+  keywords?: string[];
+  severities?: string[];
+  traceId?: string;
+  bodyAttributes?: LogBodyAttributeFilter[];
+  order?: { column: string; direction: string };
+  pageCursor?: { direction: string; cursor: string };
+  perPage?: number;
+}
+
 interface CacheEntry {
   data: any;
   timestamp: number;
@@ -93,7 +141,10 @@ export class MackerelClient {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Mackerel API error: ${response.status} ${errorText}`);
+      const retryAfter = response.headers.get("Retry-After");
+      throw new Error(
+        `Mackerel API error: ${response.status} ${errorText}${retryAfter ? ` (Retry-After: ${retryAfter} seconds)` : ""}`,
+      );
     }
 
     const result = (await response.json()) as T;
@@ -574,5 +625,16 @@ export class MackerelClient {
       }>;
       hasNextPage: boolean;
     }>("POST", "/api/v0/traces", { body });
+  }
+
+  // POST /api/v0/logs
+  async searchLogs(
+    params: SearchLogsParams,
+  ): Promise<{ results: LogRecord[]; pagination: LogPagination }> {
+    return this.request<{ results: LogRecord[]; pagination: LogPagination }>(
+      "POST",
+      "/api/v0/logs",
+      { body: params },
+    );
   }
 }

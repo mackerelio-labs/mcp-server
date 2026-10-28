@@ -24,11 +24,16 @@ function estimateTokenCount(text: string): number {
   return Math.ceil(text.length / CHARS_PER_TOKEN);
 }
 
-function createTokenLimitErrorMessage(estimatedTokens: number): string {
-  return `Response too large (estimated ${estimatedTokens.toLocaleString()} tokens, limit ${TOKEN_LIMIT.toLocaleString()} tokens). Please resolve this by:
-- Using the limit parameter to reduce the number of items returned
+const DEFAULT_TOKEN_LIMIT_ADVICE = `- Using the limit parameter to reduce the number of items returned
 - Using offset or nextId parameters for pagination
 - Applying more specific filters to narrow down the results`;
+
+function createTokenLimitErrorMessage(
+  estimatedTokens: number,
+  advice = DEFAULT_TOKEN_LIMIT_ADVICE,
+): string {
+  return `Response too large (estimated ${estimatedTokens.toLocaleString()} tokens, limit ${TOKEN_LIMIT.toLocaleString()} tokens). Please resolve this by:
+${advice}`;
 }
 
 function getAvailableHostMetrics(): string {
@@ -195,6 +200,7 @@ ${getAvailableServiceMetrics()}
 export async function buildToolResponse(
   fn: () => Promise<unknown>,
   toolName?: string,
+  tokenLimitAdvice?: string,
 ): Promise<Awaited<ReturnType<ToolCallback>>> {
   try {
     const result = await fn();
@@ -206,7 +212,10 @@ export async function buildToolResponse(
         content: [
           {
             type: "text",
-            text: createTokenLimitErrorMessage(estimatedTokens),
+            text: createTokenLimitErrorMessage(
+              estimatedTokens,
+              tokenLimitAdvice,
+            ),
           },
         ],
         isError: true,
