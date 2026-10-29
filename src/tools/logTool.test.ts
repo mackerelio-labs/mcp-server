@@ -290,20 +290,16 @@ describe("Log Tool", () => {
     ["double", "NEQ"],
     ["string", "GT"],
     ["bool", "STARTS_WITH"],
-  ])(
-    "rejects operators unsupported by the type (%s %s)",
-    async (type, operator) => {
-      const result = await callSearchLogs({
-        ...baseArgs,
-        bodyAttributes: [{ keyPath: ["status"], value: "1", type, operator }],
-      });
+  ])("rejects operators unsupported by the type (%s %s)", (type, operator) => {
+    const result = LogTool.SearchLogsToolInput.safeParse({
+      ...baseArgs,
+      bodyAttributes: [{ keyPath: ["status"], value: "1", type, operator }],
+    });
 
-      expect(result.isError).toBe(true);
-      expect((result.content as Array<{ text: string }>)[0].text).toContain(
-        "Invalid enum value",
-      );
-    },
-  );
+    expect(result.error?.issues.map((issue) => issue.path)).toEqual([
+      ["bodyAttributes", 0, "operator"],
+    ]);
+  });
 
   it.each([
     [{ from: 1700003600, to: 1700000000 }, "must be later than"],
