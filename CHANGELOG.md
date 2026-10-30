@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.11.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.10.0...v0.11.0) - 2026-10-30
+- build(deps): bump zod from 3.25.76 to 4.6.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/123
+- build(deps): bump ip-address from 10.7.2 to 10.7.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/120
+- Fix search_logs operator test failing on zod 4 by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/129
+- Enable Dependabot version updates with 5-day cooldown by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/128
+- build(deps): bump actions/checkout from 4.3.0 to 7.0.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/131
+- build(deps): bump body-parser from 2.3.0 to 2.4.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/124
+- build(deps): bump docker/setup-buildx-action from 3.11.1 to 4.4.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/130
+- build(deps-dev): bump vitest from 4.1.12 to 5.0.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/139
+- build(deps): bump actions/create-github-app-token from 2.1.1 to 3.3.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/134
+- build(deps-dev): bump @types/node from 24.2.1 to 26.6.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/133
+- Revert "build(deps-dev): bump vitest from 4.1.12 to 5.0.5" by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/144
+- build(deps): bump @modelcontextprotocol/sdk from 1.32.0 to 1.32.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/141
+- build(deps-dev): bump prettier from 3.6.2 to 3.9.10 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/138
+
 ## [v0.10.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.9.0...v0.10.0) - 2026-10-28
 - build(deps): bump @modelcontextprotocol/sdk from 1.26.0 to 1.31.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/113
 - build(deps): bump proxy-addr from 2.0.7 to 2.0.8 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/116
