@@ -19,8 +19,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+    # npm 10 bundled with Node 22.x does not support min-release-age. Switch to --globalconfig=.npmrc once Node 22.x is dropped.
     - name: Install npm 11.x
-      run: npm install -g npm@11
+      run: npm install -g npm@11 --before="$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)"
 
     - run: npm ci
     - run: npm run build
