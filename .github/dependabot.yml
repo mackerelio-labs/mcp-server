@@ -3,7 +3,9 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: weekly
+      interval: daily
+      time: "10:30"
+      timezone: Asia/Tokyo
     cooldown:
       default-days: 5
       include:
@@ -14,7 +16,9 @@ updates:
       - "/"
       - "/.github/actions/*"
     schedule:
-      interval: weekly
+      interval: daily
+      time: "10:30"
+      timezone: Asia/Tokyo
     cooldown:
       default-days: 5
       include:
