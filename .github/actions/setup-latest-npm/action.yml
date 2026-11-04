@@ -7,9 +7,10 @@ runs:
       with:
         node-version: 'lts/*'
 
+    # Uses --before for the same reason as the "Install npm" step in ci.yml; switch to --globalconfig=.npmrc together.
     - name: Install latest npm
       run: |
         echo "Current npm version: $(npm -v)"
-        npm install -g npm@latest
+        npm install -g npm@latest --before="$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)"
         echo "Updated npm version: $(npm -v)"
       shell: sh

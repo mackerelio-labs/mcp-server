@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22.x, 20.x]
+        node-version: [22.x, 24.x, 26.x]
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -19,8 +19,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+    # npm 10 bundled with Node 22.x does not support min-release-age. Switch to --globalconfig=.npmrc once Node 22.x is dropped.
     - name: Install npm 11.x
-      run: npm install -g npm@11
+      run: npm install -g npm@11 --before="$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)"
 
     - run: npm ci
     - run: npm run build
