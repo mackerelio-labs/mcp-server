@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
-    "msw": "^2.10.5",
+    "msw": "^3.0.3",
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1",
     "tsx": "^4.20.3",
