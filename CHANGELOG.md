@@ -1,5 +1,38 @@
 # Changelog
 
+## [v0.11.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.10.0...v0.11.0) - 2026-11-13
+
+- build(deps): bump zod from 3.25.76 to 4.6.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/123
+- build(deps): bump ip-address from 10.7.2 to 10.7.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/120
+- Fix search_logs operator test failing on zod 4 by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/129
+- Enable Dependabot version updates with 5-day cooldown by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/128
+- build(deps): bump actions/checkout from 4.3.0 to 7.0.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/131
+- build(deps): bump body-parser from 2.3.0 to 2.4.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/124
+- build(deps): bump docker/setup-buildx-action from 3.11.1 to 4.4.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/130
+- build(deps-dev): bump vitest from 4.1.12 to 5.0.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/139
+- build(deps): bump actions/create-github-app-token from 2.1.1 to 3.3.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/134
+- build(deps-dev): bump @types/node from 24.2.1 to 26.6.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/133
+- Revert "build(deps-dev): bump vitest from 4.1.12 to 5.0.5" by @mrasu in https://github.com/mackerelio-labs/mcp-server/pull/144
+- build(deps): bump @modelcontextprotocol/sdk from 1.32.0 to 1.32.1 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/141
+- build(deps-dev): bump prettier from 3.6.2 to 3.9.10 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/138
+- build(deps): bump docker/build-push-action from 6.18.0 to 7.4.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/146
+- Run Dependabot on Mondays and Tuesdays at 09:00 JST by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/151
+- build(deps): bump @modelcontextprotocol/sdk from 1.32.1 to 1.32.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/152
+- build(deps): bump @hono/node-server from 1.19.17 to 2.1.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/143
+- build(deps-dev): bump tsx from 4.22.4 to 4.23.15 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/135
+- build(deps): bump Songmu/tagpr from 1.7.0 to 1.21.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/136
+- Test on Node 22/24/26 and apply a cooldown to npm installed in CI by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/153
+- build(deps-dev): bump vitest from 4.1.12 to 5.0.5 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/147
+- build(deps-dev): bump tsdown from 0.14.1 to 0.23.4 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/156
+- build(deps-dev): bump @types/node from 26.6.5 to 26.6.6 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/155
+- build(deps): bump actions/setup-node from 4.4.0 to 7.1.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/145
+- build(deps): bump docker/login-action from 3.5.0 to 4.8.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/158
+- build(deps-dev): bump vitest from 5.0.5 to 5.1.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/159
+- build(deps-dev): bump typescript from 5.9.2 to 7.0.2 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/140
+- build(deps): bump actions/setup-node from 5.0.0 to 7.1.0 in /.github/actions/setup-latest-npm by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/148
+- build(deps): bump @hono/node-server from 2.1.5 to 2.1.8 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/160
+- build(deps): bump Songmu/tagpr from 1.21.4 to 1.22.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/157
+
 ## [v0.10.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.9.0...v0.10.0) - 2026-10-28
 - build(deps): bump @modelcontextprotocol/sdk from 1.26.0 to 1.31.0 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/113
 - build(deps): bump proxy-addr from 2.0.7 to 2.0.8 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/116
