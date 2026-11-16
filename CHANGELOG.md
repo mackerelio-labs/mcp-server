@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.11.1](https://github.com/mackerelio-labs/mcp-server/compare/v0.11.0...v0.11.1) - 2026-11-16
+
+- build(deps): bump hono from 4.13.13 to 4.13.18 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/161
+- Update msw to 3.0.3 by @benevolent0505 in https://github.com/mackerelio-labs/mcp-server/pull/154
+- build(deps-dev): bump tsdown from 0.23.4 to 0.23.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/163
+
 ## [v0.11.0](https://github.com/mackerelio-labs/mcp-server/compare/v0.10.0...v0.11.0) - 2026-11-13
 
 - build(deps): bump zod from 3.25.76 to 4.6.7 by @dependabot[bot] in https://github.com/mackerelio-labs/mcp-server/pull/123
